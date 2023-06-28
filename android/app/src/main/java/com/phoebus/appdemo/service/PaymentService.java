@@ -9,6 +9,7 @@ import java.util.List;
 
 import br.com.phoebus.android.payments.api.PaymentClient;
 import br.com.phoebus.android.payments.api.PaymentType;
+import br.com.phoebus.android.payments.api.PaymentV2;
 
 public class PaymentService {
 
@@ -45,8 +46,8 @@ public class PaymentService {
         doBind();
     }
 
-    public void confirmPayment(String paymentId){
-        OnBindConnectedPaymentService doConfirmPaymentService = new DoConfirmPaymentService(context, paymentClient, paymentId, promise);
+    public void confirmPayment(PaymentV2 paymentV2){
+        OnBindConnectedPaymentService doConfirmPaymentService = new DoConfirmPaymentService(context, paymentClient, paymentV2, promise);
         setOnBindConnectedPaymentService(doConfirmPaymentService);
         doBind();
     }

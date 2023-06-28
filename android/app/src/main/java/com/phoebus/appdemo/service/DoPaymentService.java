@@ -1,18 +1,12 @@
 package com.phoebus.appdemo.service;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
-import com.phoebus.appdemo.controller.eventEmitter.SendEventPayment;
 import com.phoebus.appdemo.utils.Constants;
 import com.phoebus.appdemo.utils.CredentialsUtils;
 import com.phoebus.appdemo.utils.DataTypeUtils;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.phoebus.android.payments.api.ErrorData;
@@ -74,7 +68,7 @@ public class DoPaymentService implements OnBindConnectedPaymentService {
         @Override
         public void onSuccess(PaymentV2 paymentV2) {
           PaymentService paymentService = new PaymentService(mContext, promise);
-          paymentService.confirmPayment(paymentV2.getPaymentId());
+          paymentService.confirmPayment(paymentV2);
           unBind();
         }
 

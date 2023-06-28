@@ -21,8 +21,8 @@ def flipper_post_install(installer)
   end
 end
 
-target 'appDemo' do
-  # Pods for appDemo
+target 'appdemo' do
+  # Pods for appdemo
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -71,10 +71,10 @@ target 'appDemo' do
   end
 end
 
-target 'appDemo-tvOS' do
-  # Pods for appDemo-tvOS
+target 'appdemo-tvOS' do
+  # Pods for appdemo-tvOS
 
-  target 'appDemo-tvOSTests' do
+  target 'appdemo-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

@@ -1,0 +1,22 @@
+stages:
+  - Analise Sonar
+
+sonar_analysis:
+  stage: Analise Sonar
+  image: sonarsource/sonar-scanner-cli:4.6
+  script:
+    - rm -rf package-lock.json coverage/
+    - npm config set registry https://registry.npmjs.org
+    - npx yarn install --prefer-offline --no-audit --progress=false
+    - npx yarn add jest-sonar-reporter --dev
+    - npx yarn test || FAILED=true; if [ $FAILED ]; then echo "Há testes falhando"; fi
+    - sonar-scanner -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.sources=. -Dsonar.host.url=http://continuous.inspection.phoebus -Dsonar.login=$SONAR_LOGIN -Dsonar.projectName=$SONAR_PROJECT_NAME -Dsonar.test.inclusions=**/*.test.js -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  -Dsonar.projectVersion=$VERSION
+  artifacts:
+    paths:
+      - $REPORT_PATH
+    expire_in: 180 min
+  when: manual
+  tags:
+    - docker
+  allow_failure: false
+

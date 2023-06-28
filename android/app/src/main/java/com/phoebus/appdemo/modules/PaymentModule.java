@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.phoebus.appdemo.service.PaymentService;
 
 import java.util.LinkedList;
@@ -36,17 +37,17 @@ public class PaymentModule extends ReactContextBaseJavaModule {
     public void startPayment(String value,
                              String transactionId,
                              boolean showReceiptView,
-                             String paymentTypeListString,
+                             ReadableArray paymentTypeArrayString,
                              Integer installments,
                              Promise promise){
 
-        List <PaymentType> paymentTypes = new LinkedList<>();
-        if (paymentTypeListString.length() > 0){
-            String[] paymentTypeList = paymentTypeListString.split(",");
-             for (String type : paymentTypeList){
-                 paymentTypes.add(PaymentType.valueOf(type));
-             }
-        }
+         List <PaymentType> paymentTypes = new LinkedList<>();
+            for (int i = 0; i < paymentTypeArrayString.size(); i++) {
+                String paymentTypeString = paymentTypeArrayString.getString(i);
+                if (PaymentType.valueOf(paymentTypeString) != null){
+                    paymentTypes.add(PaymentType.valueOf(paymentTypeString));
+                }
+            }
 
         try{
             PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);

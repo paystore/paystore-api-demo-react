@@ -1,29 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.phoebus.appdemo">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="br.com.phoebus.android.payments.provider.READ_PERMISSION" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="br.com.phoebus.android.payments.provider.READ_PERMISSION" />
 
-    <application
-      android:name="com.phoebus.appdemo.MainApplication"
+  <application
+    android:name="com.phoebus.appdemo.MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+    <activity
+      android:name="com.phoebus.appdemo.MainActivity"
+      android:exported="true"
       android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher"
-      android:allowBackup="false"
-      android:theme="@style/AppTheme">
-      <activity
-        android:name="com.phoebus.appdemo.MainActivity"
-        android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-        android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-      </activity>
-      <activity android:name=".controller.eventEmitter.SendEventPayment" />
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-    </application>
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:launchMode="singleTask"
+      android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity android:name=".controller.eventEmitter.SendEventPayment" />
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+  </application>
 
 </manifest>
