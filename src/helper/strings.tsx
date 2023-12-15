@@ -28,8 +28,7 @@ export function maskMoney(money: string) {
   hundreds = hundreds?.length > 0 ? `${hundreds},` : '0,';
   cents = padLeft(cents);
 
-  const currency = 'R$';
-  return `${currency} ${millions}${thousands}${hundreds}${cents}`;
+  return `${millions}${thousands}${hundreds}${cents}`;
 }
 
 function getDigits(string: string) {
@@ -45,11 +44,7 @@ function padLeft(n: string, width = 2, z = '0') {
 
 export function currencyToFloat(value: string) {
   const result = parseFloat(
-    value
-      .replace('R$', '')
-      .replace(' ', '')
-      .replace(/\./g, '')
-      .replace(',', '.')
+    value.replace(' ', '').replace(/\./g, '').replace(',', '.')
   ).toFixed(2);
-  return parseFloat(result);
+  return result;
 }

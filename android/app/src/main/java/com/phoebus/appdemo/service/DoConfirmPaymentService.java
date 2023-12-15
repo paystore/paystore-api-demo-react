@@ -64,4 +64,6 @@ public class DoConfirmPaymentService implements OnBindConnectedPaymentService {
       mPaymentClient.unbind(mContext);
     }
   }
+
+
 }

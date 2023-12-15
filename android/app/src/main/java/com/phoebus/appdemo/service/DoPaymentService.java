@@ -1,8 +1,11 @@
 package com.phoebus.appdemo.service;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
+import com.phoebus.appdemo.controller.eventEmitter.SendEventPayment;
 import com.phoebus.appdemo.utils.Constants;
 import com.phoebus.appdemo.utils.CredentialsUtils;
 import com.phoebus.appdemo.utils.DataTypeUtils;
@@ -22,12 +25,14 @@ public class DoPaymentService implements OnBindConnectedPaymentService {
   private Promise promise;
 
   private String value;
+
+  private Boolean confirmPayment;
   private String transactionId;
   private boolean showReceiptView;
   private Integer installments;
   private List <PaymentType> payments;
 
-  public DoPaymentService(ReactContext context, PaymentClient paymentClient, String value, String transactionId, boolean showReceiptView, List <PaymentType> paymentType, Integer installments,  Promise promise)
+  public DoPaymentService(ReactContext context, PaymentClient paymentClient, String value, String transactionId, boolean showReceiptView, List <PaymentType> paymentType, Integer installments, Boolean confirmPayment,  Promise promise)
   {
     this.mPaymentClient = paymentClient;
     this.mContext = context;
@@ -37,12 +42,18 @@ public class DoPaymentService implements OnBindConnectedPaymentService {
     this.showReceiptView = showReceiptView;
     this.payments = paymentType;
     this.installments = installments;
+    this.confirmPayment = confirmPayment;
 
   }
 
   @Override
   public void execute() {
+    Log.e("Pagamentos" ,"------------");
+    Log.e("Valor", value);
+    Log.e("transactionId", transactionId);
+
     PaymentRequestV2 paymentRequest = new PaymentRequestV2();
+
 
     try {
       paymentRequest.withValue(DataTypeUtils.getValueFromString(value))
@@ -67,8 +78,17 @@ public class DoPaymentService implements OnBindConnectedPaymentService {
 
         @Override
         public void onSuccess(PaymentV2 paymentV2) {
-          PaymentService paymentService = new PaymentService(mContext, promise);
-          paymentService.confirmPayment(paymentV2);
+          if (confirmPayment){
+            PaymentService paymentService = new PaymentService(mContext, promise);
+            paymentService.confirmPayment(paymentV2);
+          }
+          else {
+            Bundle bundle = PaymentV2.toBundle(paymentV2);
+            Intent newIntent = new Intent(mContext, SendEventPayment.class);
+            newIntent.putExtras(bundle);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(newIntent);
+          }
           unBind();
         }
 

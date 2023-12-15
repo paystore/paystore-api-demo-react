@@ -4,6 +4,7 @@ module.exports = {
   "editor.formatOnSave": true,
   "proseWrap": "always",
   "tabWidth": 2,
+  "endOfLine": "auto",
   "requireConfig": false,
   "useTabs": false,
   "trailingComma": "none",

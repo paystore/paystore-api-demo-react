@@ -23,7 +23,10 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity android:name=".controller.eventEmitter.EventFindPayments" />
     <activity android:name=".controller.eventEmitter.SendEventPayment" />
+    <activity android:name=".controller.eventEmitter.SendEventReversal" />
+    <activity android:name=".controller.eventEmitter.SendEventCancelPayment" />
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
   </application>
 

@@ -184,9 +184,10 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     //noinspection GradleDynamicVersion
     implementation("com.facebook.react:react-android") // From node_modules
+    annotationProcessor 'org.parceler:parceler:1.1.12'
     implementation 'org.parceler:parceler-api:1.1.12'
     implementation 'com.google.code.gson:gson:2.8.5'
-    annotationProcessor 'org.parceler:parceler:1.1.12'
+    implementation 'org.threeten:threetenbp:1.5.0'    
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {

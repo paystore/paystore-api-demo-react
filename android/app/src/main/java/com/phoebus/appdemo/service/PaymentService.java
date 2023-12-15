@@ -18,12 +18,12 @@ public class PaymentService {
     private Promise promise;
     private OnBindConnectedPaymentService onBindConnectedPaymentService;
 
-    public PaymentService(ReactContext context, Promise promise){
+    public PaymentService(ReactContext context, Promise promise) {
         this.context = context;
         this.promise = promise;
     }
 
-    private void doBind(){
+    private void doBind() {
         Promise promise = this.promise;
 
         this.paymentClient.bind(this.context.getApplicationContext(), new PaymentClient.OnConnectionCallback() {
@@ -40,14 +40,20 @@ public class PaymentService {
         });
     }
 
-    public void doPayment(String value, String transactionId, boolean showReceiptView, List<PaymentType> paymentType, Integer installments){
-        OnBindConnectedPaymentService doPayment = new DoPaymentService(context, paymentClient, value, transactionId, showReceiptView, paymentType, installments, promise);
+    public void doPayment(String value, String transactionId, boolean showReceiptView, List<PaymentType> paymentType, Integer installments, Boolean confirmPayment) {
+        OnBindConnectedPaymentService doPayment = new DoPaymentService(context, paymentClient, value, transactionId, showReceiptView, paymentType, installments, confirmPayment, promise);
         setOnBindConnectedPaymentService(doPayment);
         doBind();
     }
 
-    public void confirmPayment(PaymentV2 paymentV2){
+    public void confirmPayment(PaymentV2 paymentV2) {
         OnBindConnectedPaymentService doConfirmPaymentService = new DoConfirmPaymentService(context, paymentClient, paymentV2, promise);
+        setOnBindConnectedPaymentService(doConfirmPaymentService);
+        doBind();
+    }
+
+    public void doCancelPayment(String paymentId) {
+        OnBindConnectedPaymentService doConfirmPaymentService = new DoCancelPayment(context, paymentClient, paymentId, promise);
         setOnBindConnectedPaymentService(doConfirmPaymentService);
         doBind();
     }

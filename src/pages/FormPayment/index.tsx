@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, DeviceEventEmitter, ToastAndroid } from 'react-native';
 /**@ts-ignone */
 import CheckBox from '@react-native-community/checkbox';
-import { DeviceEventEmitter, ToastAndroid } from 'react-native';
 import { Payment } from '../../native_modules/payment';
 import { maskMoney, currencyToFloat } from '../../helper/strings';
 import {
@@ -29,21 +28,24 @@ type FormPaymentScreenProps = NativeStackScreenProps<
   'FormPayment'
 >;
 
-export default function FormPayment({ navigation }: FormPaymentScreenProps) {
+export default function FormPayment({
+  navigation
+}: Readonly<FormPaymentScreenProps>) {
   useEffect(() => {
     navigation.setOptions({
-      title: 'Pagamento',
-      headerLeft: () => null
+      title: 'Pagamento'
     });
-  });
+  }, [navigation]);
 
   const defaultValue = maskMoney((Math.random() * 100).toFixed(2).toString());
   const defaulAppTransaction = new Date().getTime().toString();
 
   const [value, setValue] = useState(defaultValue);
   const [installments, setInstallments] = useState<string>();
-  const [appTransaction, setAppTransaction] = useState(defaulAppTransaction);
+  const [appTransactionId, setAppTransactionId] =
+    useState(defaulAppTransaction);
   const [showsReceipt, setShowsReceipt] = useState(false);
+  const [mustConfimPayment, setMustConfimPayment] = useState(true);
   const [credit, setCredit] = useState(true);
   const [debit, setDebit] = useState(true);
   const [creditAdmin, setCreditAdmin] = useState();
@@ -77,23 +79,28 @@ export default function FormPayment({ navigation }: FormPaymentScreenProps) {
     } else {
       const subscription = DeviceEventEmitter.addListener(
         'onPayment',
-        (event) => {
+        (_event) => {
           subscription.remove();
-          console.debug(event?.payment);
-          Alert.alert('Pagamento', 'Pagamento realizado com Sucesso!');
-          navigation.navigate('Main');
+          Alert.alert(
+            'Pagamento',
+            mustConfimPayment
+              ? 'Pagamento realizado com Sucesso!'
+              : 'Pagamento realizado, aguardando confirmação!'
+          );
+          navigation.navigate('Main', {});
         }
       );
 
       const valuePayment = currencyToFloat(value);
       Payment.startPayment(
-        valuePayment > 0 ? valuePayment.toString() : '0.00',
-        appTransaction,
+        valuePayment,
+        appTransactionId,
         showsReceipt,
         paymentTypes,
         (creditAdmin || creditStore) && installments
           ? parseInt(installments, 10)
-          : 0
+          : 0,
+        mustConfimPayment
       )
         .then(() => {})
         .catch((error: Error) => {
@@ -109,7 +116,7 @@ export default function FormPayment({ navigation }: FormPaymentScreenProps) {
 
   function validateOnSubmit() {
     let errors: string[] = [];
-    if (!appTransaction) {
+    if (!appTransactionId) {
       errors.push('- Identificador de transação para aplicação');
     }
     return errors;
@@ -122,11 +129,7 @@ export default function FormPayment({ navigation }: FormPaymentScreenProps) {
         <TextInput
           keyboardType="numeric"
           value={value}
-          onChangeText={(val: string) => {
-            if (/[0-9]$/.test(val)) {
-              setValue(maskMoney(val));
-            }
-          }}
+          onChangeText={(v) => setValue(maskMoney(v))}
         />
       </FormTextInput>
 
@@ -143,13 +146,26 @@ export default function FormPayment({ navigation }: FormPaymentScreenProps) {
         <TextInputLabel>
           Identificador de Transação para Aplicação
         </TextInputLabel>
-        <TextInput value={appTransaction} onChangeText={setAppTransaction} />
+        <TextInput
+          value={appTransactionId}
+          onChangeText={setAppTransactionId}
+        />
       </FormTextInput>
 
       <ShowReceiptView>
         <FormCheckBox>
           <CheckBox value={showsReceipt} onValueChange={setShowsReceipt} />
           <CheckBoxLabel>Mostrar Tela de Comprovante</CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={mustConfimPayment}
+            onValueChange={setMustConfimPayment}
+          />
+          <CheckBoxLabel>Confirmar Pagamento</CheckBoxLabel>
         </FormCheckBox>
       </ShowReceiptView>
 
