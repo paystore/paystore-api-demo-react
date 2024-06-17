@@ -1,5 +1,26 @@
 ## App Demonstração API Pagamento (React) - Applet Phoebus
 
+### Versão: 1.0.3.0
+
+refs #129732
+- Adicionado  tratamento de erro caso o errorData retorne vazio. 
+refs #129820
+- Atualizado PaymentsSDK
+refs #129732
+- Adicionado tratamento de dados em caso de erro na confirmação de pagamentos.
+refs #130063
+- Adicionado o subscription remove no caso de erros nos pagamentos, para evitar notificações duplicadas.
+refs #130065
+- Passando a retornar os objetos de payments e reversal como string ao invés de writable.
+refs #130065
+- Adicionada tela para visualizar dados de pagamento.
+refs #130065
+- Adicionada chamada para tela de visualização de dados após pagamento.
+- Adicionada chamada para tela de visualização de dados na listagem geral.
+refs #129820
+- Adicionada lib native-stark
+
+
 ### Versão: 1.0.2.0
 - 112963
  - Implementado método de Estorno e Listagem de Pagamentos

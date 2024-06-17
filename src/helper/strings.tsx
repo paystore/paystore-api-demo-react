@@ -42,6 +42,10 @@ function padLeft(n: string, width = 2, z = '0') {
   return `${pad}${number}`;
 }
 
+export function currencyNumberToString(value: number) {
+  return 'R$ ' + value.toFixed(2).replace('.', ',');
+}
+
 export function currencyToFloat(value: string) {
   const result = parseFloat(
     value.replace(' ', '').replace(/\./g, '').replace(',', '.')

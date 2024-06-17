@@ -26,9 +26,10 @@ export default function FormConfirmPayment({
           navigation.navigate('Main', {});
         }
       );
-      Payment.confirmPayment(JSON.stringify(paymentItem)).catch((e: any) =>
-        console.log(e)
-      );
+      Payment.confirmPayment(JSON.stringify(paymentItem)).catch((e: any) => {
+        subscription.remove();
+        console.log(e);
+      });
     },
     [navigation]
   );

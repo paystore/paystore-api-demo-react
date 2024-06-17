@@ -3,10 +3,7 @@ package com.phoebus.appdemo.controller.eventEmitter;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
 
 public class SendEventPayment extends ReactActivity {
 
@@ -18,11 +15,12 @@ public class SendEventPayment extends ReactActivity {
 
   public void sendEvent() {
     Bundle bundle = getIntent().getExtras();
-    WritableMap map = Arguments.fromBundle(bundle);
+      String payment = bundle.getString("payment");
     getReactInstanceManager().getCurrentReactContext()
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit("onPayment",map);
-
+      .emit("onPayment", payment);
     finish();
   }
+
+
 }

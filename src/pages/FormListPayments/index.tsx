@@ -17,6 +17,7 @@ import {
   HeaderBackButtonProps,
   NativeStackNavigationProp
 } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { currencyNumberToString } from '../../helper/strings';
 
 type FormListPaymentsScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -62,7 +63,10 @@ export default function FormListPayments({
         setLoading(false);
       }
     );
-    Payment.listPayments(status).catch((e) => console.log(e));
+    Payment.listPayments(status).catch((e) => {
+      subscribe.remove();
+      console.log(e);
+    });
   }, [status]);
 
   useEffect(() => {
@@ -89,6 +93,8 @@ export default function FormListPayments({
               if (navigateTo) {
                 //@ts-ignore
                 return navigation.navigate(navigateTo, { item });
+              } else {
+                return navigation.navigate('ShowPaymentResult', { item });
               }
             }}
           >
@@ -97,7 +103,7 @@ export default function FormListPayments({
                 cardBrand: item.card.brand,
                 cardNumber: `BIN **** ${item.card.panLast4Digits}`,
                 status: item.paymentStatus,
-                value: `R$ ${item.value.toFixed(2)}`,
+                value: currencyNumberToString(item.value),
                 dateTime: item.paymentDate
               }}
             />

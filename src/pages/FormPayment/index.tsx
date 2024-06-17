@@ -21,7 +21,7 @@ import {
 } from './styles';
 import { RootStackParamList } from '../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { PaymentTypes } from '../../../types/paymentsModule';
+import { PaymentResult, PaymentTypes } from '../../../types/paymentsModule';
 
 type FormPaymentScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -77,41 +77,51 @@ export default function FormPayment({
     if (errors.length > 0) {
       Alert.alert('Campos obrigatórios', errors.toString().replace(',', '\n'));
     } else {
-      const subscription = DeviceEventEmitter.addListener(
-        'onPayment',
-        (_event) => {
-          subscription.remove();
-          Alert.alert(
-            'Pagamento',
-            mustConfimPayment
-              ? 'Pagamento realizado com Sucesso!'
-              : 'Pagamento realizado, aguardando confirmação!'
-          );
-          navigation.navigate('Main', {});
-        }
-      );
-
-      const valuePayment = currencyToFloat(value);
-      Payment.startPayment(
-        valuePayment,
-        appTransactionId,
-        showsReceipt,
-        paymentTypes,
-        (creditAdmin || creditStore) && installments
-          ? parseInt(installments, 10)
-          : 0,
-        mustConfimPayment
-      )
-        .then(() => {})
-        .catch((error: Error) => {
-          const message = error.toString();
-          ToastAndroid.showWithGravity(
-            message,
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
-          );
-        });
+      sendToPayment();
     }
+  }
+
+  function sendToPayment() {
+    const subscription = DeviceEventEmitter.addListener(
+      'onPayment',
+      (paymentEvent) => {
+        subscription.remove();
+        Alert.alert(
+          'Pagamento',
+          mustConfimPayment
+            ? 'Pagamento realizado com Sucesso!'
+            : 'Pagamento realizado, aguardando confirmação!'
+        );
+        console.log({ paymentEvent });
+        const paymentData: PaymentResult = JSON.parse(paymentEvent);
+        return navigation.navigate('ShowPaymentResult', {
+          item: paymentData
+        });
+      }
+    );
+
+    const valuePayment = currencyToFloat(value);
+    Payment.startPayment(
+      valuePayment,
+      appTransactionId,
+      showsReceipt,
+      paymentTypes,
+      (creditAdmin || creditStore) && installments
+        ? parseInt(installments, 10)
+        : 0,
+      mustConfimPayment
+    )
+      .then(() => {})
+      .catch((error: Error) => {
+        const message = error.toString();
+        //Remover listener.
+        subscription.remove();
+        ToastAndroid.showWithGravity(
+          message,
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        );
+      });
   }
 
   function validateOnSubmit() {

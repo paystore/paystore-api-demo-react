@@ -1,15 +1,17 @@
-import type { Config } from '@jest/types';
-const config: Config.InitialOptions = {
+module.exports = {
   preset: 'react-native',
-  testEnvironment: 'node',
-  verbose: true,
-  automock: true,
   clearMocks: true,
+  restoreMocks: true,
+  setupFiles: ['./__tests__/spec/jest.setup.js'],
   coverageProvider: 'v8',
   coverageReporters: ['text', 'lcov'],
-  collectCoverageFrom: ['src/**/*.tsx'],
-  moduleNameMapper: {
-    'react-native-gesture-handler': 'react-native-gesture-handler/jestSetup'
-  }
+  collectCoverageFrom: [
+    '**/src/**/*.(ts|tsx|js|jsx)',
+    '!**/node_modules/**',
+    '!/src/config/**',
+    '!**/*.config.js',
+    '!**/coverage/**'
+  ],
+  testRegex: '/__tests__/.*(?:test|spec).(ts|tsx|js)$',
+  coverageDirectory: 'coverage'
 };
-export default config;

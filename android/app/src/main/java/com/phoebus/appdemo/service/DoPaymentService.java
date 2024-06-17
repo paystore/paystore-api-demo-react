@@ -94,9 +94,9 @@ public class DoPaymentService implements OnBindConnectedPaymentService {
 
         @Override
         public void onError(ErrorData errorData) {
-          Log.e("Error", errorData.getPaymentsResponseCode()+" - "+errorData.getResponseMessage());
-          promise.reject(Constants.ERROR, errorData.getPaymentsResponseCode()+" - "+errorData.getResponseMessage());
-          unBind();
+            Log.e("Error", errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
+            promise.reject(Constants.ERROR, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "");
+            unBind();
         }
       });
     } catch (Exception e){

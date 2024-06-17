@@ -48,7 +48,7 @@ public class DoConfirmPaymentService implements OnBindConnectedPaymentService {
 
         @Override
         public void onError(ErrorData errorData) {
-          promise.reject(Constants.ERROR, errorData.getResponseMessage());
+          promise.reject(Constants.ERROR, errorData != null ? errorData.getResponseMessage(): "-");
           unBind();
         }
       });

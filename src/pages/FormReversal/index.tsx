@@ -60,9 +60,10 @@ export default function FormReversal({
   function onSubmit(values: ReversalRequire) {
     const subscription = DeviceEventEmitter.addListener(
       'onReversal',
-      (_event) => {
+      (reversalEvent) => {
         subscription.remove();
         Alert.alert('Devolução', 'Devolução realizada com Sucesso!');
+        console.log(reversalEvent);
         navigation.navigate('Main', {});
       }
     );
@@ -78,6 +79,7 @@ export default function FormReversal({
       .then(() => {})
       .catch((error: Error) => {
         const message = error.toString();
+        subscription.remove();
         ToastAndroid.showWithGravity(
           message,
           ToastAndroid.SHORT,

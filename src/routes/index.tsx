@@ -8,6 +8,7 @@ import FormListPayments from '../pages/FormListPayments';
 import FormCancelPayment from '../pages/FormCancelPayment';
 import FormConfirmPayment from '../pages/FormConfirmPayment';
 import { PaymentResult, PaymentStatus } from '../../types/paymentsModule';
+import ShowPaymentResult from '../pages/ShowPaymentResult';
 
 function NavigationRoutes() {
   const Stack = createStackNavigator<RootStackParamList>();
@@ -25,6 +26,7 @@ function NavigationRoutes() {
       <Stack.Screen name="FormListPayments" component={FormListPayments} />
       <Stack.Screen name="FormCancelPayment" component={FormCancelPayment} />
       <Stack.Screen name="FormConfirmPayment" component={FormConfirmPayment} />
+      <Stack.Screen name="ShowPaymentResult" component={ShowPaymentResult} />
     </Stack.Navigator>
   );
 }
@@ -45,6 +47,9 @@ export type RootStackParamList = {
   };
   FormConfirmPayment: {
     item?: PaymentResult;
+  };
+  ShowPaymentResult: {
+    item: PaymentResult;
   };
 };
 

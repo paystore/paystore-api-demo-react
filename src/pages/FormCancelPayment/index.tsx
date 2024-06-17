@@ -28,7 +28,10 @@ export default function FormCancelPayment({
           navigation.navigate('Main', {});
         }
       );
-      Payment.cancelPayment(paymentId).catch((e: any) => console.log(e));
+      Payment.cancelPayment(paymentId).catch((e: any) => {
+        subscribe.remove();
+        console.log(e);
+      });
     },
     [navigation]
   );

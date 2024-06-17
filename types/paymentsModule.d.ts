@@ -50,6 +50,7 @@ export interface PaymentResult {
   acquirer: string;
   acquirerAuthorizationNumber: string;
   acquirerId: string;
+  acquirerNsu: string;
   acquirerResponseCode: string;
   acquirerResponseDate: string;
   captureType: CaptureType;

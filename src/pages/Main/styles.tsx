@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { StatusBar as _StatusBar } from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
@@ -17,7 +18,7 @@ export const ButtonText = styled.Text`
   color: #000;
 `;
 
-export const StatusBar = styled.StatusBar.attrs({
+export const StatusBar = styled(_StatusBar).attrs({
   backgroundColor: 'rgba(65,50,200,225)',
   barStyle: 'light-content'
 })``;
