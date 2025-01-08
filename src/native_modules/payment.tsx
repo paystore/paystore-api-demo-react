@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
 
-const { Payment } = NativeModules;
+const { Payment, Pix } = NativeModules;
 
-export { Payment };
+export { Payment, Pix };

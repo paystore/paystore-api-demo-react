@@ -65,6 +65,23 @@ export interface PaymentResult {
   value: number;
 }
 
+export interface TerminalInfoResult {
+  terminalId: string;
+  merchantId: string;
+  merchantName: string;
+  merchantCommercialName: string;
+  merchantNationalId: string;
+  mcPostalCode: string;
+  mcStreet: string;
+  mcCity: string;
+  mcState: string;
+  mcStateAbbreviation: string;
+  mcNeighbourhood: string;
+  mcCountry: string;
+  mcComplement: string;
+  mcAddressNumber: string;
+}
+
 export interface PaymentsInterface {
   startPayment: (
     //Valor do pagamento em float "0,00"
@@ -100,10 +117,8 @@ export interface PaymentsInterface {
     paymentId: string
   ) => Promise<void>;
   confirmPayment: (paymentItem: string) => Promise<void>;
-}
-
-declare module 'react-native' {
-  interface NativeModulesStatic {
-    Payment: PaymentsInterface;
-  }
+  getTerminalInfo: () => Promise<string>;
+  getLogo: () => Promise<string>;
+  getReceiptLogo: () => Promise<string>;
+  setMainApp: (packageName: string) => Promise<void>;
 }

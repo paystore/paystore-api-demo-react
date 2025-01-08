@@ -34,6 +34,7 @@ const style = StyleSheet.create({
   },
   TextInputError: {
     // fontSize: theme.fontSize.small,
+    color: 'red',
     margin: 0,
     padding: 0 // Tornar visível por padrão
   }

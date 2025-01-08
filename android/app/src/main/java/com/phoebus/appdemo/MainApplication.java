@@ -13,6 +13,7 @@ import com.facebook.react.flipper.ReactNativeFlipper;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import com.phoebus.appdemo.modules.PaymentPackage;
+import com.phoebus.appdemo.modules.PixPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           packages.add(new PaymentPackage());
+          packages.add(new PixPackage());
           return packages;
         }
 

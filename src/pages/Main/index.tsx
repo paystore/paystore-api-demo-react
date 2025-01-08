@@ -16,48 +16,19 @@ type NavigationOption<T extends keyof RootStackParamList> = {
 };
 
 export default function Main({ navigation }: Readonly<MainScreenProps>) {
-  useEffect(() => {
-    navigation.setOptions({
-      title: 'PayStore Api Demo'
-    });
-  });
-
   const options: Array<
-    | NavigationOption<'Main'>
-    | NavigationOption<'FormPayment'>
-    | NavigationOption<'FormReversal'>
-    | NavigationOption<'FormListPayments'>
-    | NavigationOption<'FormCancelPayment'>
-    | NavigationOption<'FormConfirmPayment'>
+    NavigationOption<'PaymentsRoutes'> | NavigationOption<'PixRoutes'>
   > = [
     {
       id: '1',
-      title: 'Pagamento (Solicitação + Confirmação)',
-      navigationTo: 'FormPayment',
+      title: 'Pagamentos',
+      navigationTo: 'PaymentsRoutes',
       params: {}
     },
     {
       id: '2',
-      title: 'Estornar Pagamento',
-      navigationTo: 'FormReversal',
-      params: {}
-    },
-    {
-      id: '3',
-      title: 'Listar Pagamentos',
-      navigationTo: 'FormListPayments',
-      params: { status: [] }
-    },
-    {
-      id: '4',
-      title: 'Cancelar Pagamento',
-      navigationTo: 'FormCancelPayment',
-      params: {}
-    },
-    {
-      id: '5',
-      title: 'Confirmar Pagamento',
-      navigationTo: 'FormConfirmPayment',
+      title: 'Pix',
+      navigationTo: 'PixRoutes',
       params: {}
     }
   ];

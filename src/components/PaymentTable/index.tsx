@@ -1,5 +1,13 @@
 import React, { ReactNode, isValidElement } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 interface PaymentTableProps {
   items: PaymentTableItem[];
@@ -35,7 +43,17 @@ function PaymentValueItem({ item }: { item: PaymentTableItem['value'] }) {
   if (isValidElement(item)) {
     return <View>{item}</View>;
   } else {
-    return <Text style={styles.cell}>{item ?? '-'}</Text>;
+    function handleCopyToClipBoard(item: PaymentTableItem['value']) {
+      if (typeof item === 'string') {
+        Clipboard.setString(item);
+        ToastAndroid.show('Copiado', ToastAndroid.SHORT);
+      }
+    }
+    return (
+      <TouchableOpacity onPress={() => handleCopyToClipBoard(item)}>
+        <Text style={styles.cell}>{item ?? '-'}</Text>
+      </TouchableOpacity>
+    );
   }
 }
 

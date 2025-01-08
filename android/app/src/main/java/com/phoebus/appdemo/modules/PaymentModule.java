@@ -11,10 +11,12 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.google.gson.Gson;
-import com.phoebus.appdemo.controller.eventEmitter.EventFindPayments;
-import com.phoebus.appdemo.model.PaymentsV2Parcel;
-import com.phoebus.appdemo.service.PaymentService;
-import com.phoebus.appdemo.service.ReverseService;
+import com.phoebus.appdemo.controller.TerminalInfoController;
+import com.phoebus.appdemo.controller.eventEmitter.payments.EventFindPayments;
+import com.phoebus.appdemo.model.payments.PaymentsV2Parcel;
+import com.phoebus.appdemo.model.TerminalInfo;
+import com.phoebus.appdemo.service.payments.PaymentService;
+import com.phoebus.appdemo.service.payments.ReverseService;
 import com.phoebus.appdemo.utils.CredentialsUtils;
 
 import org.parceler.Parcels;
@@ -165,6 +167,54 @@ public class PaymentModule extends ReactContextBaseJavaModule {
             paymentService.confirmPayment(paymentV2);
         } catch (Exception e) {
             Log.e("errorConfirmPayment", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+   @ReactMethod
+   public void getTerminalInfo(Promise promise){
+        try {
+            TerminalInfoController terminalInfoController = new TerminalInfoController(getReactApplicationContext());
+            TerminalInfo terminalInfo = terminalInfoController.getTerminalInfo();
+            Gson gson = new Gson();
+            String terminalInfoString = gson.toJson(terminalInfo);
+            promise.resolve(terminalInfoString);
+
+        }catch(Exception e){
+            Log.e("errorterminalInfo", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+   }
+
+   @ReactMethod
+    public void getLogo(Promise promise){
+       try {
+           PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+           paymentService.doGetLogo();
+       }catch(Exception e){
+           Log.e("errorGetLogo", e.toString());
+           promise.reject("ERROR", e.getMessage());
+       }
+   }
+
+    @ReactMethod
+    public void getReceiptLogo(Promise promise){
+        try {
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doGetReceiptLogo();
+        }catch(Exception e){
+            Log.e("errorGetLogo", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void setMainApp(String packageName, Promise promise){
+        try {
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doSetMainApp(packageName);
+        }catch(Exception e){
+            Log.e("errorSetMainApp", e.toString());
             promise.reject("ERROR", e.getMessage());
         }
     }
