@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Pix } from '../../../native_modules/payment';
-import { Container } from './style';
-import { Alert, Text, ToastAndroid } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
+import { Alert, Text, ToastAndroid } from 'react-native';
+import { Pix } from '../../../native_modules/payment';
 import { RootStackParamList } from '../../../routes';
+import { Container } from './style';
 
 type PixSyncScreenProps = NativeStackScreenProps<RootStackParamList, 'SyncPix'>;
 

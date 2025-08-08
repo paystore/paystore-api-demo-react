@@ -47,6 +47,8 @@ export default function FormConsultPix({
 
   const [printMerchantReceipt, setPrintMerchantReceipt] = useState(true);
   const [printCustomerReceipt, setPrintCustomerReceipt] = useState(true);
+  const [previewMerchantReceipt, setPreviewMerchantReceipt] = useState(true);
+  const [previewCustomerReceipt, setPreviewCustomerReceipt] = useState(true);
   const [txId, setTxId] = useState('');
   const [pixClientId, setPixClientId] = useState('');
 
@@ -75,7 +77,13 @@ export default function FormConsultPix({
   function sendToPayment() {
     const subscription = subscriptionEvent();
     if (params.type === 'TXID') {
-      Pix.consultByTxId(txId, printMerchantReceipt, printCustomerReceipt)
+      Pix.consultByTxId({
+        txId: txId,
+        printMerchantReceipt: printMerchantReceipt,
+        printCustomerReceipt: printCustomerReceipt,
+        previewCustomerReceipt: previewCustomerReceipt,
+        previewMerchantReceipt: previewMerchantReceipt
+      })
         .then(() => {})
         .catch((error: Error) => {
           const message = error.toString();
@@ -102,7 +110,12 @@ export default function FormConsultPix({
           );
         });
     } else {
-      Pix.consult(printMerchantReceipt, printCustomerReceipt)
+      Pix.consult({
+        printMerchantReceipt: printMerchantReceipt,
+        printCustomerReceipt: printCustomerReceipt,
+        previewCustomerReceipt: previewCustomerReceipt,
+        previewMerchantReceipt: previewMerchantReceipt
+      })
         .then(() => {})
         .catch((error: Error) => {
           const message = error.toString();
@@ -136,6 +149,24 @@ export default function FormConsultPix({
               <TextInput value={txId} onChangeText={(v) => setTxId(v)} />
             </FormTextInput>
           )}
+          <ShowReceiptView>
+            <FormCheckBox>
+              <CheckBox
+                value={previewMerchantReceipt}
+                onValueChange={setPreviewMerchantReceipt}
+              />
+              <CheckBoxLabel>Exibir via do Comerciante</CheckBoxLabel>
+            </FormCheckBox>
+            <ShowReceiptView>
+              <FormCheckBox>
+                <CheckBox
+                  value={previewCustomerReceipt}
+                  onValueChange={setPreviewCustomerReceipt}
+                />
+                <CheckBoxLabel>Exibir via do Cliente</CheckBoxLabel>
+              </FormCheckBox>
+            </ShowReceiptView>
+          </ShowReceiptView>
 
           <ShowReceiptView>
             <FormCheckBox>

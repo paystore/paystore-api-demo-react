@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { PixStatus } from '../../../../types/pixModule';
+import { PixStatus, ReportType } from '../../../../types/pixModule';
 import { SafeAreaView, ScrollView, ToastAndroid, View } from 'react-native';
 import {
   Container,
@@ -38,7 +38,7 @@ export default function FormFilter({
   navigation,
   route
 }: Readonly<FormFilterScreenProps>) {
-  const { title } = route.params;
+  const { title, filterType } = route.params;
   // Define a data atual
   const { endOfDay, startOfDay } = getToday();
   const [radioValue, setRadioValue] = useState('today');
@@ -67,6 +67,18 @@ export default function FormFilter({
   } as const;
 
   const [statusButton, setStatusButton] = useState(initStatusButton);
+
+  const initReportButton: Record<ReportType, boolean> = {
+    SUMMARY: true,
+    DETAILED: false
+  } as const;
+
+  const REPORT_STATUS: Record<ReportType, string> = {
+    SUMMARY: 'RESUMIDO',
+    DETAILED: 'DETALHADO'
+  };
+
+  const [reportButton, setReportButton] = useState(initReportButton);
 
   useEffect(() => {
     navigation.setOptions({
@@ -113,17 +125,42 @@ export default function FormFilter({
     });
   }
 
+  function onChangeButtonReport(value: ReportType) {
+    setReportButton((prevStatus) => {
+      const newStatus: Record<ReportType, boolean> = { ...prevStatus };
+      for (const key in newStatus) {
+        if (Object.prototype.hasOwnProperty.call(newStatus, key)) {
+          newStatus[key as ReportType] = false;
+        }
+      }
+      // Ativa o botão que foi clicado
+      newStatus[value] = true;
+      return newStatus;
+    });
+  }
+
   function validate() {
     const errors: string[] = [];
     if (dateStart > dateFinish || dateFinish < dateStart) {
       errors.push('Data ou Hora inválidas');
     }
 
-    const filtersEnabled = Object.values(statusButton).some(
-      (value) => value === true
-    );
+    if (filterType === 'COB') {
+      const filtersStatusEnabled = Object.values(statusButton).some(
+        (value) => value === true
+      );
 
-    if (!filtersEnabled) errors.push('Deve selecionar pelo menos um status');
+      if (!filtersStatusEnabled)
+        errors.push('Deve selecionar pelo menos um status');
+    }
+
+    if (filterType === 'REPORT') {
+      const filtersReportEnabled = Object.values(reportButton).some(
+        (value) => value === true
+      );
+      if (!filtersReportEnabled)
+        errors.push('Deve selecionar pelo menos um tipo de relatório');
+    }
 
     return errors;
   }
@@ -140,13 +177,27 @@ export default function FormFilter({
         dateStart: dateStart.toISOString() as string,
         dateEnd: dateFinish.toISOString() as string
       };
-      const filtersEnabled = Object.entries(statusButton)
-        .filter(([key, value]) => value === true)
-        .map(([key]) => key);
 
-      filtersLink.status = filtersEnabled as PixStatus[];
+      if (filterType === 'COB') {
+        const filtersEnabled = Object.entries(statusButton)
+          .filter(([key, value]) => value === true)
+          .map(([key]) => key);
 
-      navigation.navigate('FormListPix', { ...filtersLink });
+        filtersLink.status = filtersEnabled as PixStatus[];
+
+        navigation.navigate('FormListPix', { ...filtersLink });
+      } else if (filterType === 'REPORT') {
+        const firstFilterKeyEnabled = Object.entries(reportButton).find(
+          ([key, value]) => value === true
+        )?.[0];
+        if (firstFilterKeyEnabled) {
+          navigation.navigate('GetReportPix', {
+            startDate: filtersLink.date.dateStart,
+            endDate: filtersLink.date.dateEnd,
+            reportType: firstFilterKeyEnabled as ReportType
+          });
+        }
+      }
     }
   };
 
@@ -182,6 +233,7 @@ export default function FormFilter({
     setDateFinish(endOfDay);
     setDateStart(startOfDay);
     setStatusButton(initStatusButton);
+    setReportButton(initReportButton);
   }
 
   const ButtonFilterGroup = () => {
@@ -196,6 +248,62 @@ export default function FormFilter({
       </FABGroupContainer>
     );
   };
+
+  function FilterStatusButtons() {
+    return (
+      <View>
+        <FilterTitle>Status</FilterTitle>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {Object.entries(PIX_STATUS).map(([key, value]) => {
+            return (
+              <ButtonStatus
+                key={key}
+                title={value}
+                onPress={() => onChangeButtonStatus(key)}
+                /**@ts-ignore */
+                active={statusButton[key] as boolean}
+              />
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
+
+  function FilterReportButtons() {
+    return (
+      <View>
+        <FilterTitle>Tipo de Relatório</FilterTitle>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {Object.entries(REPORT_STATUS).map(([key, value]) => {
+            return (
+              <ButtonStatus
+                key={key}
+                title={value}
+                onPress={() => onChangeButtonReport(key as ReportType)}
+                /**@ts-ignore */
+                active={reportButton[key] as boolean}
+              />
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flexGrow: 1 }}>
@@ -246,29 +354,8 @@ export default function FormFilter({
             </PeriodInfoView>
           </View>
 
-          <View>
-            <FilterTitle>Status</FilterTitle>
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {Object.entries(PIX_STATUS).map(([key, value]) => {
-                return (
-                  <ButtonStatus
-                    key={key}
-                    title={value}
-                    onPress={() => onChangeButtonStatus(key)}
-                    /**@ts-ignore */
-                    active={statusButton[key] as boolean}
-                  />
-                );
-              })}
-            </View>
-          </View>
+          {filterType === 'COB' ? <FilterStatusButtons /> : null}
+          {filterType === 'REPORT' ? <FilterReportButtons /> : null}
         </Container>
       </ScrollView>
 
@@ -295,11 +382,11 @@ function ButtonStatus({
   onPress,
   title,
   active
-}: {
+}: Readonly<{
   onPress: () => void;
   title: string;
   active: boolean;
-}) {
+}>) {
   return (
     <StatusButtom onPress={onPress} active={active}>
       <StatusText active={active}>{title}</StatusText>
@@ -311,11 +398,11 @@ function ButtomFilter({
   onSelect,
   text,
   status
-}: {
+}: Readonly<{
   onSelect: () => void;
   text: string;
   status: string;
-}) {
+}>) {
   return (
     <PeriodButton
       onPress={onSelect}

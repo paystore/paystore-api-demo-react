@@ -41,11 +41,17 @@ export default function ShowTerminalInfo({
 
 function mountTableItems(items: TerminalInfoResult): TableItem[] {
   return [
-    { title: 'terminalId', value: items.terminalId },
-    { title: 'merchantId', value: items.merchantId },
-    { title: 'merchantName', value: items.merchantName },
-    { title: 'merchantNationalId', value: items.merchantNationalId },
-    { title: 'Nome Comercial', value: items.merchantCommercialName },
+    { title: 'Código do Facilitador', value: items.subAcquirerId },
+    { title: 'Identificador do terminal', value: items.terminalId },
+    { title: 'Identificador do lojista', value: items.merchantId },
+    { title: 'Nome Fantasia', value: items.merchantName },
+    { title: 'Tipo de Lojista', value: items.mcNationalType },
+    { title: 'Categoria do Lojista', value: items.mcCategoryCode },
+    {
+      title: 'Identificador do lojista (CNPJ)',
+      value: items.merchantNationalId
+    },
+    { title: 'Razão Social', value: items.merchantCommercialName },
     { title: 'Rua', value: items.mcStreet },
     { title: 'Número', value: items.mcAddressNumber },
     { title: 'Cidade', value: items.mcCity },
@@ -54,6 +60,11 @@ function mountTableItems(items: TerminalInfoResult): TableItem[] {
     { title: 'Bairro', value: items.mcNeighbourhood },
     { title: 'CEP', value: items.mcPostalCode },
     { title: 'Estado', value: items.mcState },
-    { title: 'Estado ABRV', value: items.mcStateAbbreviation }
+    { title: 'Estado ABRV', value: items.mcStateAbbreviation },
+    { title: 'Telefone', value: items.mcPhone },
+    { title: 'E-mail', value: items.mcEmail },
+    { title: 'Website', value: items.mcWebSite },
+    { title: 'Código ISO da Moeda', value: items.currencyISOString },
+    { title: 'Código da Moeda', value: items.currencyCode }
   ];
 }

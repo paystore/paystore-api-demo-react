@@ -15,7 +15,7 @@ import com.phoebus.appdemo.model.pix.ConsultCobByClientIdRequest;
 import com.phoebus.appdemo.model.pix.PixCobResponse;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoPixConsultByClientIdService implements OnBindConnectedPixServices {
 

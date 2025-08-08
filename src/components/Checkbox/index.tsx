@@ -15,22 +15,26 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    flexShrink: 1,
+    flexShrink: 1
   }
 });
 
 interface CheckBoxProps {
-    label: string,
-    onPress?: () => void,
-    value?: boolean
+  label: string;
+  onPress?: () => void;
+  value?: boolean;
 }
 
 export function CheckBoxItem(props: CheckBoxProps) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={props.onPress} activeOpacity={0.8} style={styles.checkBox}>
-        <Text style={styles.label}>{props.label}</Text>
+      <TouchableOpacity
+        onPress={props.onPress}
+        activeOpacity={0.8}
+        style={styles.checkBox}
+      >
         <CheckBox value={props.value} onValueChange={props.onPress} />
+        <Text style={styles.label}>{props.label}</Text>
       </TouchableOpacity>
     </View>
   );

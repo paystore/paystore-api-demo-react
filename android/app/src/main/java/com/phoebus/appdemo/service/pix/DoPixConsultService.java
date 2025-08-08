@@ -14,7 +14,7 @@ import com.phoebus.appdemo.model.pix.ConsultCobRequest;
 import com.phoebus.appdemo.model.pix.PixCobResponse;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoPixConsultService implements OnBindConnectedPixServices {
 
@@ -23,28 +23,34 @@ public class DoPixConsultService implements OnBindConnectedPixServices {
     private final ReactContext mContext;
     private final Boolean printMerchantReceipt;
     private final Boolean printCustomerReceipt;
+    private final Boolean previewMerchantReceipt;
+    private final Boolean previewCustomerReceipt;
 
-    public DoPixConsultService(ReactContext context, PixClient pixClient, Boolean printMerchantReceipt, Boolean printCustomerReceipt , Promise promise){
+    public DoPixConsultService(ReactContext context, PixClient pixClient, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, Promise promise) {
         this.mPixClient = pixClient;
         this.promise = promise;
         this.mContext = context;
         this.printCustomerReceipt = printCustomerReceipt;
         this.printMerchantReceipt = printMerchantReceipt;
+        this.previewMerchantReceipt = previewMerchantReceipt;
+        this.previewCustomerReceipt = previewCustomerReceipt;
     }
 
 
     @Override
     public void execute() {
         Gson gson = new Gson();
-        if(mPixClient.isBound()){
+        if (mPixClient.isBound()) {
             try {
                 ConsultCobRequest consultCobRequest = new ConsultCobRequest();
                 consultCobRequest.printCustomerReceipt = printCustomerReceipt;
                 consultCobRequest.printMerchantReceipt = printMerchantReceipt;
-                mPixClient.consult(gson.toJson(consultCobRequest, ConsultCobRequest.class), new PixClient.ConsultCallback(){
+                consultCobRequest.previewCustomerReceipt = previewCustomerReceipt;
+                consultCobRequest.previewMerchantReceipt = previewMerchantReceipt;
+                mPixClient.consult(gson.toJson(consultCobRequest, ConsultCobRequest.class), new PixClient.ConsultCallback() {
                     @Override
                     public void onSuccess(@Nullable String pixDataResponse) {
-                        if(pixDataResponse != null){
+                        if (pixDataResponse != null) {
                             PixCobResponse pixCobResponse = gson.fromJson(pixDataResponse, PixCobResponse.class);
                             Bundle bundle = toBundle(pixCobResponse);
                             Intent newIntent = new Intent(mContext, SendEventPixConsult.class);
@@ -57,11 +63,11 @@ public class DoPixConsultService implements OnBindConnectedPixServices {
 
                     @Override
                     public void onError(@Nullable String errorData) {
-                        if(errorData != null){
+                        if (errorData != null) {
                             PixErrorResponse pixErrorResponse = gson.fromJson(errorData, PixErrorResponse.class);
                             Log.e("Error", pixErrorResponse.errorMessage);
                             promise.reject(Constants.ERROR, pixErrorResponse.errorMessage);
-                        }else{
+                        } else {
                             Log.e("Error", "");
                             promise.reject(Constants.ERROR, "");
                         }
@@ -69,7 +75,7 @@ public class DoPixConsultService implements OnBindConnectedPixServices {
                     }
                 });
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 promise.reject("ERROR", e.getMessage());
                 unBind();
             }
@@ -78,13 +84,12 @@ public class DoPixConsultService implements OnBindConnectedPixServices {
     }
 
     private void unBind() {
-        if (mPixClient.isBound())
-        {
+        if (mPixClient.isBound()) {
             mPixClient.unbind();
         }
     }
 
-    private Bundle toBundle(PixCobResponse pixCobResponse){
+    private Bundle toBundle(PixCobResponse pixCobResponse) {
         Gson gson = new Gson();
         Bundle bundle = new Bundle();
         String pixPayment = gson.toJson(pixCobResponse);

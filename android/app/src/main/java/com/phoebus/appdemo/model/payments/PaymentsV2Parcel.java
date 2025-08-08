@@ -50,10 +50,16 @@ public class PaymentsV2Parcel {
 
     private String appTransactionId;
 
+    private String terminalId;
+
+    private String ticketNumber;
+
+    private String nsuTerminal;
+
     public List<PaymentsV2Parcel> getPaymentsV2Parcel(List<PaymentV2> listPaymentsV2) {
         List<PaymentsV2Parcel> listPaymentsV2Parcel = new ArrayList<>();
 
-        for(int i = 0; i < listPaymentsV2.size(); i++) {
+        for (int i = 0; i < listPaymentsV2.size(); i++) {
             PaymentsV2Parcel paymentsV2Parcel = new PaymentsV2Parcel();
 
             PaymentV2 paymentV2 = listPaymentsV2.get(i);
@@ -73,7 +79,9 @@ public class PaymentsV2Parcel {
             paymentsV2Parcel.setInstallments(paymentV2.getInstallments());
             paymentsV2Parcel.setAcquirer(paymentV2.getAcquirer());
             paymentsV2Parcel.setAppTransactionId(paymentV2.getAppTransactionId());
-
+            paymentsV2Parcel.setTerminalId(paymentV2.getTerminalId());
+            paymentsV2Parcel.setTicketNumber(paymentV2.getTicketNumber());
+            paymentsV2Parcel.setNsuTerminal(paymentV2.getNsuTerminal());
             listPaymentsV2Parcel.add(paymentsV2Parcel);
         }
 
@@ -212,4 +220,27 @@ public class PaymentsV2Parcel {
         this.appTransactionId = appTransactionId;
     }
 
+    public String getNsuTerminal() {
+        return nsuTerminal;
+    }
+
+    public void setNsuTerminal(String nsuTerminal) {
+        this.nsuTerminal = nsuTerminal;
+    }
+
+    public String getTerminalId() {
+        return terminalId;
+    }
+
+    public void setTerminalId(String terminalId) {
+        this.terminalId = terminalId;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
 }

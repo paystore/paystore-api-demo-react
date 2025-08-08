@@ -1,40 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { RootStackParamList } from '../../../../routes';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {
-  View,
-  ScrollView,
-  Button,
-  DeviceEventEmitter,
-  Alert,
-  ToastAndroid
-} from 'react-native';
 import { Formik, FormikErrors, FormikValues } from 'formik';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  DeviceEventEmitter,
+  ScrollView,
+  ToastAndroid,
+  View
+} from 'react-native';
+import { StartRefundRequest } from '../../../../../types/pixModule';
 import { CheckBoxItem } from '../../../../components/Checkbox';
 import { InputText } from '../../../../components/Input';
-import { Pix } from '../../../../native_modules/payment';
 import SubmitButton from '../../../../components/SubmitButtom';
+import { Pix } from '../../../../native_modules/payment';
+import { RootStackParamList } from '../../../../routes';
 
 type FormPixRefundScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'FormPixRefund'
 >;
 
-interface RefundPixRequire {
-  txId: string;
-  printMerchantReceipt: boolean;
-  printCustomerReceipt: boolean;
-}
-
 export default function FormPixRefund({
   navigation,
   route
 }: Readonly<FormPixRefundScreenProps>) {
   const { type } = route.params;
-  const [initialValues, setInitialValues] = useState<RefundPixRequire>({
+  const [initialValues, setInitialValues] = useState<StartRefundRequest>({
     txId: '',
     printMerchantReceipt: true,
-    printCustomerReceipt: true
+    printCustomerReceipt: true,
+    previewCustomerReceipt: true,
+    previewMerchantReceipt: true
   });
 
   function getTitle() {
@@ -51,7 +47,7 @@ export default function FormPixRefund({
     });
   }, [navigation]);
 
-  function onSubmit(values: RefundPixRequire) {
+  function onSubmit(values: StartRefundRequest) {
     const subscription = DeviceEventEmitter.addListener(
       'onPixRefund',
       (_reversalEvent) => {
@@ -62,11 +58,7 @@ export default function FormPixRefund({
     );
 
     if (type === 'TXID') {
-      Pix.refundPixPayment(
-        values.txId,
-        values.printMerchantReceipt,
-        values.printCustomerReceipt
-      )
+      Pix.refundPixPayment(values)
         .then(() => {})
         .catch((error: Error) => {
           const message = error.toString();
@@ -78,7 +70,12 @@ export default function FormPixRefund({
           );
         });
     } else {
-      Pix.refund(values.printMerchantReceipt, values.printCustomerReceipt)
+      Pix.refund({
+        printMerchantReceipt: values.printMerchantReceipt,
+        printCustomerReceipt: values.printCustomerReceipt,
+        previewCustomerReceipt: values.previewCustomerReceipt,
+        previewMerchantReceipt: values.previewMerchantReceipt
+      })
         .then(() => {})
         .catch((error: Error) => {
           const message = error.toString();
@@ -126,7 +123,28 @@ export default function FormPixRefund({
                 )}
 
                 <CheckBoxItem
-                  label="Imprimir comprovante do Comerciante"
+                  label="Exibir comprovante do Comerciante"
+                  value={values.previewMerchantReceipt}
+                  onPress={() =>
+                    setFieldValue(
+                      'previewMerchantReceipt',
+                      !values.previewMerchantReceipt
+                    )
+                  }
+                />
+                <CheckBoxItem
+                  label="Exibir via do Cliente"
+                  value={values.previewCustomerReceipt}
+                  onPress={() =>
+                    setFieldValue(
+                      'previewCustomerReceipt',
+                      !values.previewCustomerReceipt
+                    )
+                  }
+                />
+
+                <CheckBoxItem
+                  label="Imprimir via do Comerciante"
                   value={values.printMerchantReceipt}
                   onPress={() =>
                     setFieldValue(

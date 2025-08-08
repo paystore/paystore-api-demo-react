@@ -5,6 +5,8 @@ import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 
+import javax.annotation.Nullable;
+
 import br.com.phoebus.android.payments.api.PaymentClient;
 
 public class ReverseService {
@@ -13,14 +15,12 @@ public class ReverseService {
     private Promise promise;
     private OnBindConnectedPaymentService onBindConnectedPaymentService;
 
-    public ReverseService(ReactContext context, Promise promise){
+    public ReverseService(ReactContext context, Promise promise) {
         this.context = context;
         this.promise = promise;
     }
 
-    private void doBind(){
-        Promise promise = this.promise;
-
+    private void doBind() {
         this.paymentClient.bind(this.context.getApplicationContext(), new PaymentClient.OnConnectionCallback() {
             @Override
             public void onConnected() {
@@ -35,8 +35,8 @@ public class ReverseService {
         });
     }
 
-    public void doReverse(String value, String transactionId, String paymentId, boolean showReceiptView, boolean setPrintMerchantReceipt, boolean setPrintCustomerReceipt ){
-        OnBindConnectedPaymentService doReverse = new DoReverseService(context, paymentClient, value, transactionId, paymentId, showReceiptView, setPrintMerchantReceipt, setPrintCustomerReceipt, promise);
+    public void doReversePayment(@Nullable String value, String transactionId, String paymentId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPaymentService doReverse = new DoReverseService(context, paymentClient, value, transactionId, paymentId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPaymentService(doReverse);
         doBind();
     }

@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 
 export const Container = styled.ScrollView.attrs({
-  contentContainerStyle: { margin: 10 }
+  contentContainerStyle: { marginHorizontal: 15, marginVertical: 20 }
 })``;
 
 export const FormTextInput = styled.View`

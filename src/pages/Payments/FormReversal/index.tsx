@@ -24,9 +24,10 @@ interface ReversalRequire {
   paymentId: string;
   value: string;
   transactionId: string;
-  showReceiptView: boolean;
-  showPrintMerchantReceipt: boolean;
-  showPrintCustomerReceipt: boolean;
+  printMerchantReceipt: boolean;
+  printCustomerReceipt: boolean;
+  previewMerchantReceipt: boolean;
+  previewCustomerReceipt: boolean;
 }
 
 export default function FormReversal({
@@ -39,7 +40,7 @@ export default function FormReversal({
   useEffect(() => {
     if (!item) {
       navigation.navigate('FormListPayments', {
-        status: ['CONFIRMED'],
+        request: { status: ['CONFIRMED'] },
         navigateTo: 'FormReversal'
       });
     } else {
@@ -47,9 +48,10 @@ export default function FormReversal({
         paymentId: item.paymentId,
         value: maskMoney(item.value.toFixed(2)),
         transactionId: item.appTransactionId,
-        showReceiptView: true,
-        showPrintMerchantReceipt: true,
-        showPrintCustomerReceipt: true
+        printMerchantReceipt: false,
+        printCustomerReceipt: false,
+        previewMerchantReceipt: true,
+        previewCustomerReceipt: true
       });
     }
     navigation.setOptions({
@@ -68,14 +70,15 @@ export default function FormReversal({
       }
     );
     const valueReversal = currencyToFloat(values.value);
-    Payment.startPaymentReversal(
-      valueReversal,
-      values.transactionId,
-      values.paymentId,
-      values.showReceiptView,
-      values.showPrintMerchantReceipt,
-      values.showPrintCustomerReceipt
-    )
+    Payment.reversePaymentV2({
+      value: valueReversal,
+      appTransactionId: values.transactionId,
+      paymentId: values.paymentId,
+      printMerchantReceipt: values.printMerchantReceipt,
+      printCustomerReceipt: values.printCustomerReceipt,
+      previewMerchantReceipt: values.previewMerchantReceipt,
+      previewCustomerReceipt: values.previewCustomerReceipt
+    })
       .then(() => {})
       .catch((error: Error) => {
         const message = error.toString();
@@ -153,29 +156,42 @@ export default function FormReversal({
                   }}
                 />
                 <CheckBoxItem
-                  label="Mostrar comprovante"
-                  value={values.showReceiptView}
-                  onPress={() =>
-                    setFieldValue('showReceiptView', !values.showReceiptView)
-                  }
-                />
-                <CheckBoxItem
-                  label="Imprimir via do Estabelecimento"
-                  value={values.showPrintMerchantReceipt}
+                  label="Exibir via do estabelecimento"
+                  value={values.previewMerchantReceipt}
                   onPress={() =>
                     setFieldValue(
-                      'showPrintMerchantReceipt',
-                      !values.showPrintMerchantReceipt
+                      'previewMerchantReceipt',
+                      !values.previewMerchantReceipt
                     )
                   }
                 />
                 <CheckBoxItem
-                  label="Imprimir via do Cliente"
-                  value={values.showPrintCustomerReceipt}
+                  label="Exibir via do cliente"
+                  value={values.previewCustomerReceipt}
                   onPress={() =>
                     setFieldValue(
-                      'showPrintCustomerReceipt',
-                      !values.showPrintCustomerReceipt
+                      'previewCustomerReceipt',
+                      !values.previewCustomerReceipt
+                    )
+                  }
+                />
+                <CheckBoxItem
+                  label="Imprimir via do estabelecimento automaticamente "
+                  value={values.printMerchantReceipt}
+                  onPress={() =>
+                    setFieldValue(
+                      'printMerchantReceipt',
+                      !values.printMerchantReceipt
+                    )
+                  }
+                />
+                <CheckBoxItem
+                  label="Imprimir via do cliente automaticamente"
+                  value={values.printCustomerReceipt}
+                  onPress={() =>
+                    setFieldValue(
+                      'printCustomerReceipt',
+                      !values.printCustomerReceipt
                     )
                   }
                 />

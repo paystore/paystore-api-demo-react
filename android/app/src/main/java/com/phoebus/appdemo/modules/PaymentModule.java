@@ -1,7 +1,5 @@
 package com.phoebus.appdemo.modules;
 
-import android.content.Intent;
-import android.database.Cursor;
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -10,28 +8,22 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.google.gson.Gson;
 import com.phoebus.appdemo.controller.TerminalInfoController;
-import com.phoebus.appdemo.controller.eventEmitter.payments.EventFindPayments;
-import com.phoebus.appdemo.model.payments.PaymentsV2Parcel;
 import com.phoebus.appdemo.model.TerminalInfo;
 import com.phoebus.appdemo.service.payments.PaymentService;
 import com.phoebus.appdemo.service.payments.ReverseService;
-import com.phoebus.appdemo.utils.CredentialsUtils;
+import com.phoebus.appdemo.utils.DataTypeUtils;
 
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import br.com.phoebus.android.payments.api.PaymentStatus;
+import javax.annotation.Nullable;
+
 import br.com.phoebus.android.payments.api.PaymentType;
 import br.com.phoebus.android.payments.api.PaymentV2;
-import br.com.phoebus.android.payments.api.provider.PaymentContract;
 import br.com.phoebus.android.payments.api.provider.PaymentProviderApi;
-import br.com.phoebus.android.payments.api.provider.PaymentProviderRequest;
 
 
 public class PaymentModule extends ReactContextBaseJavaModule {
@@ -56,25 +48,28 @@ public class PaymentModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startPayment(String value,
-                             String transactionId,
-                             boolean showReceiptView,
-                             ReadableArray paymentTypeArrayString,
-                             Integer installments,
-                             Boolean confirmPayment,
-                             Promise promise) {
-
-        List<PaymentType> paymentTypes = new LinkedList<>();
-        for (int i = 0; i < paymentTypeArrayString.size(); i++) {
-            String paymentTypeString = paymentTypeArrayString.getString(i);
-            if (PaymentType.valueOf(paymentTypeString) != null) {
-                paymentTypes.add(PaymentType.valueOf(paymentTypeString));
-            }
-        }
-
+    public void startPaymentV2(ReadableMap request, Promise promise) {
         try {
+            String value = DataTypeUtils.getStringSafe(request, "value");
+            String appTransactionId = DataTypeUtils.getStringSafe(request, "appTransactionId");
+            Boolean printMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "printMerchantReceipt");
+            Boolean printCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "printCustomerReceipt");
+            Boolean previewMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "previewMerchantReceipt");
+            Boolean previewCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "previewCustomerReceipt");
+            ReadableArray paymentTypeArrayString = DataTypeUtils.getArraySafe(request, "paymentTypes");
+            Integer installments = DataTypeUtils.getIntegerSafe(request, "installments");
+            Boolean confirmPayment = DataTypeUtils.getBooleanSafe(request, "confirmPayment");
+
+            List<PaymentType> paymentTypes = new LinkedList<>();
+            if (paymentTypeArrayString != null) {
+                for (int i = 0; i < paymentTypeArrayString.size(); i++) {
+                    String paymentTypeString = paymentTypeArrayString.getString(i);
+                    paymentTypes.add(PaymentType.valueOf(paymentTypeString));
+                }
+            }
+
             PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
-            paymentService.doPayment(value, transactionId, showReceiptView, paymentTypes, installments, confirmPayment);
+            paymentService.doPayment(value, appTransactionId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, paymentTypes, installments, confirmPayment);
 
         } catch (Exception e) {
             Log.e("errorPayment", e.toString());
@@ -83,53 +78,11 @@ public class PaymentModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void listPayments(ReadableArray status, Promise promise) {
+    public void listPayments(@Nullable ReadableMap request, Promise promise) {
         try {
-            PaymentProviderRequest request = new PaymentProviderRequest(CredentialsUtils.getMyAppInfo(), new Date());
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doGetPayments(request);
 
-            if (status != null) {
-                List<PaymentStatus> paymentStatus = new ArrayList<>();
-                for (int i = 0; i < status.size(); i++) {
-                    String statusItem = status.getString(i);
-                    if (statusItem != null) {
-                        PaymentStatus paymentStatusItem = PaymentStatus.valueOf(statusItem);
-                        paymentStatus.add(paymentStatusItem);
-                    }
-                }
-                request.setStatus(paymentStatus);
-            }
-
-            String[] columns = new String[]{
-                    PaymentContract.column.ID,
-                    PaymentContract.column.VALUE,
-                    PaymentContract.column.ACQUIRER_ID,
-                    PaymentContract.column.ACQUIRER_NAME,
-                    PaymentContract.column.ACQUIRER_AUTHORIZATION_NUMBER,
-                    PaymentContract.column.ACQUIRER_RESPONSE_CODE,
-                    PaymentContract.column.ACQUIRER_RESPONSE_DATE,
-                    PaymentContract.column.CAPTURE_TYPE,
-                    PaymentContract.column.PAYMENT_STATUS,
-                    PaymentContract.column.PAYMENT_TYPE,
-                    PaymentContract.column.PAYMENT_DATE,
-                    PaymentContract.column.CARD_BRAND,
-                    PaymentContract.column.APP_TRANSACTION_ID,
-                    PaymentContract.column.CARD_PAN_LAST_4_DIGITS,
-                    PaymentContract.column.INSTALLMENTS,
-                    PaymentContract.column.RECEIPT_CLIENT,
-                    PaymentContract.column.RECEIPT_MERCHANT,
-            };
-            request.setColumns(columns);
-
-            Cursor cursor = getReactApplicationContext().getContentResolver().query(request.getUriBuilder().build(), columns, null, null, null);
-            List<PaymentV2> payments = PaymentV2.fromCursorV2(cursor);
-
-            PaymentsV2Parcel paymentsV2Parcel = new PaymentsV2Parcel();
-            List<PaymentsV2Parcel> listPaymentsV2Parcel = paymentsV2Parcel.getPaymentsV2Parcel(payments);
-
-            Intent newIntent = new Intent(context, EventFindPayments.class);
-            newIntent.putExtra("payments", Parcels.wrap(listPaymentsV2Parcel));
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(newIntent);
         } catch (Exception e) {
             Log.e("Error", "O erro foi:", e);
             promise.reject("ERROR", e.getMessage());
@@ -137,10 +90,19 @@ public class PaymentModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startPaymentReversal(String value, String transactionId, String paymentId, Boolean showReceiptView, Boolean setPrintMerchantReceipt, Boolean setPrintCustomerReceipt, Promise promise) {
+    public void reversePaymentV2(ReadableMap request, Promise promise) {
         try {
+            String value = DataTypeUtils.getStringSafe(request, "value");
+            String appTransactionId = DataTypeUtils.getStringSafe(request, "appTransactionId");
+            String paymentId = DataTypeUtils.getStringSafe(request, "paymentId");
+            Boolean printMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "printMerchantReceipt");
+            Boolean printCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "printCustomerReceipt");
+            Boolean previewMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "previewMerchantReceipt");
+            Boolean previewCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "previewCustomerReceipt");
+
+
             ReverseService reverseService = new ReverseService(this.getReactApplicationContext(), promise);
-            reverseService.doReverse(value, transactionId, paymentId, showReceiptView, setPrintMerchantReceipt, setPrintCustomerReceipt);
+            reverseService.doReversePayment(value, appTransactionId, paymentId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt);
         } catch (Exception e) {
             Log.e("errorPayment", e.toString());
             promise.reject("ERROR", e.getMessage());
@@ -171,8 +133,8 @@ public class PaymentModule extends ReactContextBaseJavaModule {
         }
     }
 
-   @ReactMethod
-   public void getTerminalInfo(Promise promise){
+    @ReactMethod
+    public void getTerminalInfo(Promise promise) {
         try {
             TerminalInfoController terminalInfoController = new TerminalInfoController(getReactApplicationContext());
             TerminalInfo terminalInfo = terminalInfoController.getTerminalInfo();
@@ -180,41 +142,73 @@ public class PaymentModule extends ReactContextBaseJavaModule {
             String terminalInfoString = gson.toJson(terminalInfo);
             promise.resolve(terminalInfoString);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("errorterminalInfo", e.toString());
             promise.reject("ERROR", e.getMessage());
         }
-   }
-
-   @ReactMethod
-    public void getLogo(Promise promise){
-       try {
-           PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
-           paymentService.doGetLogo();
-       }catch(Exception e){
-           Log.e("errorGetLogo", e.toString());
-           promise.reject("ERROR", e.getMessage());
-       }
-   }
+    }
 
     @ReactMethod
-    public void getReceiptLogo(Promise promise){
+    public void getLogo(Promise promise) {
         try {
             PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
-            paymentService.doGetReceiptLogo();
-        }catch(Exception e){
+            paymentService.doGetLogo();
+        } catch (Exception e) {
             Log.e("errorGetLogo", e.toString());
             promise.reject("ERROR", e.getMessage());
         }
     }
 
     @ReactMethod
-    public void setMainApp(String packageName, Promise promise){
+    public void getReceiptLogo(Promise promise) {
+        try {
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doGetReceiptLogo();
+        } catch (Exception e) {
+            Log.e("errorGetLogo", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void setMainApp(String packageName, Promise promise) {
         try {
             PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
             paymentService.doSetMainApp(packageName);
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("errorSetMainApp", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    //Reimprime recibo
+    @ReactMethod
+    public void reprintV2(ReadableMap request, Promise promise) {
+        try {
+
+            String paymentId = DataTypeUtils.getStringSafe(request, "paymentId");
+            Boolean printMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "printMerchantReceipt");
+            Boolean printCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "printCustomerReceipt");
+            Boolean previewMerchantReceipt = DataTypeUtils.getBooleanSafe(request, "previewMerchantReceipt");
+            Boolean previewCustomerReceipt = DataTypeUtils.getBooleanSafe(request, "previewCustomerReceipt");
+
+
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doReprintReceipt(printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, paymentId);
+        } catch (Exception e) {
+            Log.e("startInitialization", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    //Inicia uma inicialização
+    @ReactMethod
+    public void startInitialization(Promise promise) {
+        try {
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doStartInicialization();
+        } catch (Exception e) {
+            Log.e("startInitialization", e.toString());
             promise.reject("ERROR", e.getMessage());
         }
     }

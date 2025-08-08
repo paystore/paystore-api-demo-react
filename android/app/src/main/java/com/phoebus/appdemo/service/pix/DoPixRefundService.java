@@ -9,14 +9,12 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.google.gson.Gson;
-import com.phoebus.appdemo.controller.eventEmitter.pix.SendEventPixPayment;
 import com.phoebus.appdemo.controller.eventEmitter.pix.SendEventPixRefund;
-import com.phoebus.appdemo.model.pix.ConsultCobRequest;
 import com.phoebus.appdemo.model.pix.PixCobResponse;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.model.pix.RefundCobRequest;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoPixRefundService implements OnBindConnectedPixServices {
 
@@ -25,12 +23,16 @@ public class DoPixRefundService implements OnBindConnectedPixServices {
     private final ReactContext mContext;
     private final Boolean printMerchantReceipt;
     private final Boolean printCustomerReceipt;
+    private final Boolean previewMerchantReceipt;
+    private final Boolean previewCustomerReceipt;
 
-    public DoPixRefundService(ReactContext context, PixClient pixClient, Boolean printMerchantReceipt, Boolean printCustomerReceipt , Promise promise){
+    public DoPixRefundService(ReactContext context, PixClient pixClient, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, Promise promise) {
         this.mPixClient = pixClient;
         this.promise = promise;
         this.printCustomerReceipt = printCustomerReceipt;
         this.printMerchantReceipt = printMerchantReceipt;
+        this.previewMerchantReceipt = previewMerchantReceipt;
+        this.previewCustomerReceipt = previewCustomerReceipt;
         this.mContext = context;
     }
 
@@ -38,15 +40,17 @@ public class DoPixRefundService implements OnBindConnectedPixServices {
     @Override
     public void execute() {
         Gson gson = new Gson();
-        if(mPixClient.isBound()){
+        if (mPixClient.isBound()) {
             try {
                 RefundCobRequest refundCobRequest = new RefundCobRequest();
                 refundCobRequest.printCustomerReceipt = printCustomerReceipt;
                 refundCobRequest.printMerchantReceipt = printMerchantReceipt;
-                mPixClient.refund(gson.toJson(refundCobRequest, RefundCobRequest.class), new PixClient.RefundCallback(){
+                refundCobRequest.previewCustomerReceipt = previewCustomerReceipt;
+                refundCobRequest.previewMerchantReceipt = previewMerchantReceipt;
+                mPixClient.refund(gson.toJson(refundCobRequest, RefundCobRequest.class), new PixClient.RefundCallback() {
                     @Override
                     public void onSuccess(@Nullable String pixDataResponse) {
-                        if(pixDataResponse != null){
+                        if (pixDataResponse != null) {
                             PixCobResponse pixCobResponse = gson.fromJson(pixDataResponse, PixCobResponse.class);
                             Bundle bundle = toBundle(pixCobResponse);
                             Intent newIntent = new Intent(mContext, SendEventPixRefund.class);
@@ -59,11 +63,11 @@ public class DoPixRefundService implements OnBindConnectedPixServices {
 
                     @Override
                     public void onError(@Nullable String errorData) {
-                        if(errorData != null){
+                        if (errorData != null) {
                             PixErrorResponse pixErrorResponse = gson.fromJson(errorData, PixErrorResponse.class);
                             Log.e("Error", pixErrorResponse.errorMessage);
                             promise.reject(Constants.ERROR, pixErrorResponse.errorMessage);
-                        }else{
+                        } else {
                             Log.e("Error", "");
                             promise.reject(Constants.ERROR, "");
                         }
@@ -71,7 +75,7 @@ public class DoPixRefundService implements OnBindConnectedPixServices {
                     }
                 });
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 promise.reject("ERROR", e.getMessage());
                 unBind();
             }
@@ -80,13 +84,12 @@ public class DoPixRefundService implements OnBindConnectedPixServices {
     }
 
     private void unBind() {
-        if (mPixClient.isBound())
-        {
+        if (mPixClient.isBound()) {
             mPixClient.unbind();
         }
     }
 
-    private Bundle toBundle(PixCobResponse pixCobResponse){
+    private Bundle toBundle(PixCobResponse pixCobResponse) {
         Gson gson = new Gson();
         Bundle bundle = new Bundle();
         String pixPayment = gson.toJson(pixCobResponse);

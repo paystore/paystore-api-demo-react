@@ -39,7 +39,7 @@ export default function FormCancelPayment({
   useEffect(() => {
     if (!item) {
       navigation.navigate('FormListPayments', {
-        status: ['PENDING'],
+        request: { status: ['PENDING'] },
         navigateTo: 'FormCancelPayment',
         title: 'Lista de pagamentos pendentes'
       });

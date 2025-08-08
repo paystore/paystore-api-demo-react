@@ -14,7 +14,7 @@ import com.phoebus.appdemo.model.pix.CreateCobRequest;
 import com.phoebus.appdemo.model.pix.PixCobResponse;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoPixCreateCobService implements OnBindConnectedPixServices{
     private final PixClient mPixClient;
@@ -25,13 +25,17 @@ public class DoPixCreateCobService implements OnBindConnectedPixServices{
     private final String pixClientId;
     private final Boolean printMerchantReceipt;
     private final Boolean printCustomerReceipt;
+    private final Boolean previewMerchantReceipt;
+    private final Boolean previewCustomerReceipt;
 
-    public DoPixCreateCobService(ReactContext context, PixClient pixClient, String value, String pixClientId, Boolean printMerchantReceipt, Boolean printCustomerReceipt, Promise promise){
+    public DoPixCreateCobService(ReactContext context, PixClient pixClient, @Nullable String value, String pixClientId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, Promise promise){
         this.mPixClient = pixClient;
         this.value = value;
         this.pixClientId = pixClientId;
         this.printCustomerReceipt = printCustomerReceipt;
         this.printMerchantReceipt = printMerchantReceipt;
+        this.previewMerchantReceipt = previewMerchantReceipt;
+        this.previewCustomerReceipt = previewCustomerReceipt;
         this.promise = promise;
         this.mContext = context;
     }
@@ -42,12 +46,15 @@ public class DoPixCreateCobService implements OnBindConnectedPixServices{
             Gson gson = new Gson();
             CreateCobRequest createCobRequest = new CreateCobRequest();
             //Caso o valor venha vazio, não adicionar na requisição
-            if(!value.isEmpty()){
+            if(value != null && !value.isBlank()){
                 createCobRequest.cobValue = value;
             }           
             createCobRequest.pixClientId = pixClientId;
             createCobRequest.printMerchantReceipt = printMerchantReceipt;
             createCobRequest.printCustomerReceipt = printCustomerReceipt;
+            createCobRequest.previewMerchantReceipt = previewMerchantReceipt;
+            createCobRequest.previewCustomerReceipt = previewCustomerReceipt;
+
 
             try{
                 mPixClient.startPixPayment( gson.toJson(createCobRequest), new PixClient.StartPixPaymentCallback() {

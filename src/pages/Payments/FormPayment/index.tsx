@@ -14,11 +14,9 @@ import {
   PaymentTypesView,
   CheckBoxColumn,
   FormCheckBox,
-  CheckBoxLabel,
-  SubmitButtonView,
-  Button,
-  ButtonText
+  CheckBoxLabel
 } from './styles';
+import { customAlphabet } from 'nanoid/non-secure';
 import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PaymentResult, PaymentTypes } from '../../../../types/paymentsModule';
@@ -39,13 +37,20 @@ export default function FormPayment({
   }, [navigation]);
 
   const defaultValue = maskMoney((Math.random() * 100).toFixed(2).toString());
-  const defaulAppTransaction = new Date().getTime().toString();
+  const nanoid6 = customAlphabet(
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+    6
+  );
+  const defaulAppTransaction = nanoid6();
 
   const [value, setValue] = useState(defaultValue);
   const [installments, setInstallments] = useState<string>();
   const [appTransactionId, setAppTransactionId] =
     useState(defaulAppTransaction);
-  const [showsReceipt, setShowsReceipt] = useState(false);
+  const [previewCustomerReceipt, setPreviewCustomerReceipt] = useState(true);
+  const [previewMerchantReceipt, setPreviewMerchantReceipt] = useState(true);
+  const [printMerchantReceipt, setPrintMerchantReceipt] = useState(false);
+  const [printCustomerReceipt, setPrintCustomerReceipt] = useState(false);
   const [mustConfimPayment, setMustConfimPayment] = useState(true);
   const [credit, setCredit] = useState(true);
   const [debit, setDebit] = useState(true);
@@ -102,16 +107,20 @@ export default function FormPayment({
     );
 
     const valuePayment = currencyToFloat(value);
-    Payment.startPayment(
-      valuePayment,
-      appTransactionId,
-      showsReceipt,
-      paymentTypes,
-      (creditAdmin || creditStore) && installments
-        ? parseInt(installments, 10)
-        : 0,
-      mustConfimPayment
-    )
+    Payment.startPaymentV2({
+      value: valuePayment,
+      appTransactionId: appTransactionId,
+      printMerchantReceipt: printMerchantReceipt,
+      printCustomerReceipt: printCustomerReceipt,
+      previewMerchantReceipt: previewMerchantReceipt,
+      previewCustomerReceipt: previewCustomerReceipt,
+      paymentTypes: paymentTypes,
+      installments:
+        (creditAdmin || creditStore) && installments
+          ? parseInt(installments, 10)
+          : 0,
+      confirmPayment: mustConfimPayment
+    })
       .then(() => {})
       .catch((error: Error) => {
         const message = error.toString();
@@ -159,14 +168,53 @@ export default function FormPayment({
         </TextInputLabel>
         <TextInput
           value={appTransactionId}
-          onChangeText={setAppTransactionId}
+          maxLength={6}
+          onChangeText={(text) => {
+            const sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
+            setAppTransactionId(sanitized);
+          }}
         />
       </FormTextInput>
 
       <ShowReceiptView>
         <FormCheckBox>
-          <CheckBox value={showsReceipt} onValueChange={setShowsReceipt} />
-          <CheckBoxLabel>Mostrar Tela de Comprovante</CheckBoxLabel>
+          <CheckBox
+            value={previewMerchantReceipt}
+            onValueChange={setPreviewMerchantReceipt}
+          />
+          <CheckBoxLabel>Exibir via do estabelecimento</CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={previewCustomerReceipt}
+            onValueChange={setPreviewCustomerReceipt}
+          />
+          <CheckBoxLabel>Exibir via do cliente</CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={printMerchantReceipt}
+            onValueChange={setPrintMerchantReceipt}
+          />
+          <CheckBoxLabel>
+            Imprimir via do estabelecimento automaticamente
+          </CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={printCustomerReceipt}
+            onValueChange={setPrintCustomerReceipt}
+          />
+          <CheckBoxLabel>Imprimir via do cliente automaticamente</CheckBoxLabel>
         </FormCheckBox>
       </ShowReceiptView>
 

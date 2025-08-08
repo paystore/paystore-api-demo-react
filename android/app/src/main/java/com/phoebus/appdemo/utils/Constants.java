@@ -6,6 +6,10 @@ public class Constants {
 
   public static final String ERROR = "ERROR_PAYMENT";
 
+  public static final String TAG = "APP DEMO"; //Alterar pelo seu app
+
+  public static final String NOTIFICATION_CHANNEL_ID = "broadcast_app_demo"; //Alterar pelo seu app broadcast_myappname
+
   public static final String ON_PAYMENT_EVENT = "onPayment";
 
   public static final String CANCEL_SIGNATURE = "CANCEL_SIGNATURE";

@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, DeviceEventEmitter, ToastAndroid } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { Pix } from '../../../native_modules/payment';
-import { maskMoney, currencyToFloat } from '../../../helper/strings';
-import {
-  Container,
-  FormTextInput,
-  TextInput,
-  TextInputLabel,
-  ShowReceiptView,
-  FormCheckBox,
-  CheckBoxLabel,
-  SubmitButtonView,
-  Button,
-  ButtonText
-} from './styles';
-import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { PixResult } from '../../../../types/pixModule';
+import React, { useEffect, useState } from 'react';
+import { Alert, DeviceEventEmitter, ToastAndroid } from 'react-native';
 import uuid from 'react-native-uuid';
+import { PixResult } from '../../../../types/pixModule';
 import SubmitButton from '../../../components/SubmitButtom';
+import { currencyToFloat, maskMoney } from '../../../helper/strings';
+import { Pix } from '../../../native_modules/payment';
+import { RootStackParamList } from '../../../routes';
+import {
+  CheckBoxLabel,
+  Container,
+  FormCheckBox,
+  FormTextInput,
+  ShowReceiptView,
+  TextInput,
+  TextInputLabel
+} from './styles';
 
 type FormPaymentScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -35,13 +32,17 @@ export default function FormPixPayment({
     });
   }, [navigation]);
 
-  const defaultValue = maskMoney((Math.random() * 100).toFixed(2).toString());
+  const defaultValue = maskMoney(
+    (Math.round(Math.random() * 1000) / 10).toFixed(2)
+  );
 
   const [value, setValue] = useState(defaultValue);
   const [printMerchantReceipt, setPrintMerchantReceipt] = useState(true);
   const [printCustomerReceipt, setPrintCustomerReceipt] = useState(true);
+  const [previewMerchantReceipt, setPreviewMerchantReceipt] = useState(true);
+  const [previewCustomerReceipt, setPreviewCustomerReceipt] = useState(true);
   const [enableValue, setEnableValue] = useState(false);
-  const pixClientId = uuid.v4();
+  const [pixClientId, setPixClientId] = useState(() => uuid.v4());
 
   function submit() {
     const errors = validateOnSubmit();
@@ -65,12 +66,14 @@ export default function FormPixPayment({
     );
 
     const valuePayment = currencyToFloat(value);
-    Pix.startPixPayment(
-      enableValue ? valuePayment : '',
-      pixClientId,
-      printMerchantReceipt,
-      printCustomerReceipt
-    )
+    Pix.startPixPayment({
+      value: enableValue ? valuePayment : '',
+      pixClientId: pixClientId,
+      printMerchantReceipt: printMerchantReceipt,
+      printCustomerReceipt: printCustomerReceipt,
+      previewMerchantReceipt: previewMerchantReceipt,
+      previewCustomerReceipt: previewCustomerReceipt
+    })
       .then(() => {})
       .catch((error: Error) => {
         const message = error.toString();
@@ -81,6 +84,7 @@ export default function FormPixPayment({
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM
         );
+        setPixClientId(() => uuid.v4());
       });
   }
 
@@ -110,6 +114,26 @@ export default function FormPixPayment({
         <TextInputLabel>PixClientId</TextInputLabel>
         <TextInput editable={false} value={pixClientId} />
       </FormTextInput>
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={previewMerchantReceipt}
+            onValueChange={setPreviewMerchantReceipt}
+          />
+          <CheckBoxLabel>Exibir via do Comerciante</CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
+      <ShowReceiptView>
+        <FormCheckBox>
+          <CheckBox
+            value={previewCustomerReceipt}
+            onValueChange={setPreviewCustomerReceipt}
+          />
+          <CheckBoxLabel>Exibir via do Cliente</CheckBoxLabel>
+        </FormCheckBox>
+      </ShowReceiptView>
+
       <ShowReceiptView>
         <FormCheckBox>
           <CheckBox

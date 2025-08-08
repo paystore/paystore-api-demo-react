@@ -6,7 +6,8 @@ import {
   FlatList,
   DeviceEventEmitter,
   RefreshControl,
-  Text
+  Text,
+  View
 } from 'react-native';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { PaymentItem } from '../../../components/PaymentItem';
@@ -42,7 +43,7 @@ export default function FormListPayments({
   navigation,
   route
 }: Readonly<FormListPaymentsScreenProps>) {
-  const { status, navigateTo, title } = route.params;
+  const { request, navigateTo, title } = route.params;
   useEffect(() => {
     navigation.setOptions({
       title: title ?? 'Lista de Pagamentos',
@@ -63,11 +64,11 @@ export default function FormListPayments({
         setLoading(false);
       }
     );
-    Payment.listPayments(status).catch((e) => {
+    Payment.listPayments({ ...request }).catch((e) => {
       subscribe.remove();
       console.log(e);
     });
-  }, [status]);
+  }, [request]);
 
   useEffect(() => {
     setLoading(true);
@@ -82,6 +83,14 @@ export default function FormListPayments({
         refreshControl={
           <RefreshControl onRefresh={fetchPayments} refreshing={loading} />
         }
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              height: 1,
+              backgroundColor: '#eee'
+            }}
+          />
+        )}
         ListEmptyComponent={
           <Text style={{ textAlign: 'center' }}>
             {loading ? '' : 'Nenhum dado encontrado'}

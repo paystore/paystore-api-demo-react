@@ -7,4 +7,8 @@ public class ConsultCobRequest {
     public Boolean printCustomerReceipt;
     @SerializedName("print_merchant_receipt")
     public Boolean printMerchantReceipt;
+    @SerializedName("preview_customer_receipt")
+    public Boolean previewCustomerReceipt;
+    @SerializedName("preview_merchant_receipt")
+    public Boolean previewMerchantReceipt;
 }

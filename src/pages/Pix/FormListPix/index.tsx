@@ -68,7 +68,11 @@ export default function FormListPix({
       }
     );
 
-    Pix.listPixPayments(date.dateStart, date.dateEnd, status, '').catch((e) => {
+    Pix.listPixPayments({
+      startDate: date.dateStart,
+      endDate: date.dateEnd,
+      status: status
+    }).catch((e) => {
       subscribe.remove();
       console.log(e);
     });

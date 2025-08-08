@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">API Demo React</string>
+    <string name="notify_broadcast_service_processing_payment" translatable="false">Processando pagamento...</string>
 </resources>

@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { RootStackParamList } from '../../../routes';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React from 'react';
 import { PixResult } from '../../../../types/pixModule';
 import {
   PaymentTable,
   PaymentTableItem
 } from '../../../components/PaymentTable';
 import { currencyNumberToString } from '../../../helper/strings';
+import { RootStackParamList } from '../../../routes';
 
 type ShowPaymentResultScreenProps = NativeStackScreenProps<
   RootStackParamList,

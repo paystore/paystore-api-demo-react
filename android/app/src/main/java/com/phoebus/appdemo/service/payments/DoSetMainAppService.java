@@ -35,7 +35,7 @@ public class DoSetMainAppService implements OnBindConnectedPaymentService{
 
                 @Override
                 public void onError(ErrorData errorData) {
-                    Log.e("Error", errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
+                    Log.e(Constants.TAG, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
                     promise.reject(Constants.ERROR, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "");
                 }
             });

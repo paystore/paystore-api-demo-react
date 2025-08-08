@@ -9,13 +9,12 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.google.gson.Gson;
-import com.phoebus.appdemo.controller.eventEmitter.pix.SendEventPixPayment;
 import com.phoebus.appdemo.controller.eventEmitter.pix.SendEventPixRefund;
 import com.phoebus.appdemo.model.pix.PixCobResponse;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.model.pix.RefundCobByTxIdRequest;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoPixRefundCobByTxIdService implements OnBindConnectedPixServices{
     private final PixClient mPixClient;
@@ -25,12 +24,16 @@ public class DoPixRefundCobByTxIdService implements OnBindConnectedPixServices{
     private final String txId;
     private final Boolean printMerchantReceipt;
     private final Boolean printCustomerReceipt;
+    private final Boolean previewMerchantReceipt;
+    private final Boolean previewCustomerReceipt;
 
-    public DoPixRefundCobByTxIdService(ReactContext context, PixClient pixClient, String txId, Boolean printMerchantReceipt, Boolean printCustomerReceipt, Promise promise){
+    public DoPixRefundCobByTxIdService(ReactContext context, PixClient pixClient, String txId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt,@Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, Promise promise){
         this.mPixClient = pixClient;
         this.txId = txId;
         this.printCustomerReceipt = printCustomerReceipt;
         this.printMerchantReceipt = printMerchantReceipt;
+        this.previewMerchantReceipt = previewMerchantReceipt;
+        this.previewCustomerReceipt = previewCustomerReceipt;
         this.promise = promise;
         this.mContext = context;
     }
@@ -43,6 +46,8 @@ public class DoPixRefundCobByTxIdService implements OnBindConnectedPixServices{
             refundCobRequest.txId = txId;
             refundCobRequest.printCustomerReceipt = printCustomerReceipt;
             refundCobRequest.printMerchantReceipt = printMerchantReceipt;
+            refundCobRequest.previewCustomerReceipt = previewCustomerReceipt;
+            refundCobRequest.previewMerchantReceipt = previewMerchantReceipt;
 
             try{
                 mPixClient.refundPixPayment(gson.toJson(refundCobRequest), new PixClient.RefundPixPaymentCallback() {

@@ -11,12 +11,16 @@ type MainPaymentScreenProps = NativeStackScreenProps<
   'MainPayment'
 >;
 
-type NavigationOption<T extends keyof RootStackParamList> = {
+type NavigationOption<T extends keyof Partial<RootStackParamList>> = {
   id: string;
   title: string;
   navigationTo: T;
   params: RootStackParamList[T];
 };
+
+type NavigationOptions = {
+  [K in keyof RootStackParamList]: NavigationOption<K>;
+}[keyof RootStackParamList];
 
 export default function MainPayment({
   navigation
@@ -27,17 +31,7 @@ export default function MainPayment({
     });
   });
 
-  const options: Array<
-    | NavigationOption<'FormPayment'>
-    | NavigationOption<'FormReversal'>
-    | NavigationOption<'FormListPayments'>
-    | NavigationOption<'FormCancelPayment'>
-    | NavigationOption<'FormConfirmPayment'>
-    | NavigationOption<'TerminalInfo'>
-    | NavigationOption<'ShowLogo'>
-    | NavigationOption<'ShowReceiptLogo'>
-    | NavigationOption<'FormMainApp'>
-  > = [
+  const options: NavigationOptions[] = [
     {
       id: '1',
       title: 'Pagamento (Solicitação + Confirmação)',
@@ -46,15 +40,15 @@ export default function MainPayment({
     },
     {
       id: '2',
-      title: 'Estornar Pagamento',
-      navigationTo: 'FormReversal',
-      params: {}
+      title: 'Filtrar Pagamentos',
+      navigationTo: 'FormFindPayment',
+      params: { request: {} }
     },
     {
       id: '3',
-      title: 'Listar Pagamentos',
-      navigationTo: 'FormListPayments',
-      params: { status: [] }
+      title: 'Estornar Pagamento',
+      navigationTo: 'FormReversal',
+      params: {}
     },
     {
       id: '4',
@@ -90,6 +84,18 @@ export default function MainPayment({
       id: '9',
       title: 'Obter Logo Recibo',
       navigationTo: 'ShowReceiptLogo',
+      params: {}
+    },
+    {
+      id: '10',
+      title: 'Reimprimir Comprovante',
+      navigationTo: 'ReprintReceipt',
+      params: {}
+    },
+    {
+      id: '11',
+      title: 'Inicializar',
+      navigationTo: 'StartInitialization',
       params: {}
     }
   ];

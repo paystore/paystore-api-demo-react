@@ -6,6 +6,8 @@ public class TerminalInfo {
     private String merchantNationalId;
     private String terminalId;
     private String mcPostalCode;
+    private String mcNationalType;
+    private String mcCategoryCode;
     private String mcStreet;
     private String mcCity;
     private String mcState;
@@ -14,6 +16,13 @@ public class TerminalInfo {
     private String mcComplement;
     private String mcNeighbourhood;
     private String mcAddressNumber;
+    private String currencyCode;
+    private String currencyISOString;
+    private String subAcquirerId;
+    private String mcPhone;
+    private String mcEmail;
+    private String mcWebSite;
+
 
     public TerminalInfo() {
         // Construtor padrão
@@ -130,6 +139,70 @@ public class TerminalInfo {
 
     public void setMcAddressNumber(String mcAddressNumber) {
         this.mcAddressNumber = mcAddressNumber;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public void setCurrencyISOString(String currencyISOString) {
+        this.currencyISOString = currencyISOString;
+    }
+
+    public void setSubAcquirerId(String subAcquirerId) {
+        this.subAcquirerId = subAcquirerId;
+    }
+
+    public void setMcCategoryCode(String mcCategoryCode) {
+        this.mcCategoryCode = mcCategoryCode;
+    }
+
+    public String getSubAcquirerId() {
+        return subAcquirerId;
+    }
+
+    public String getCurrencyISOString() {
+        return currencyISOString;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public String getMcCategoryCode() {
+        return mcCategoryCode;
+    }
+
+    public String getMcNationalType() {
+        return mcNationalType;
+    }
+
+    public void setMcNationalType(String mcNationalType) {
+        this.mcNationalType = mcNationalType;
+    }
+
+    public String getMcPhone() {
+        return mcPhone;
+    }
+
+    public void setMcPhone(String mcPhone) {
+        this.mcPhone = mcPhone;
+    }
+
+    public String getMcEmail() {
+        return mcEmail;
+    }
+
+    public void setMcEmail(String mcEmail) {
+        this.mcEmail = mcEmail;
+    }
+
+    public String getMcWebSite() {
+        return mcWebSite;
+    }
+
+    public void setMcWebSite(String mcWebSite) {
+        this.mcWebSite = mcWebSite;
     }
 }
 

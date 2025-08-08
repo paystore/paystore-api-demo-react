@@ -10,7 +10,7 @@ import FormReversal from '../pages/Payments/FormReversal';
 import FormListPayments from '../pages/Payments/FormListPayments';
 import FormCancelPayment from '../pages/Payments/FormCancelPayment';
 import FormConfirmPayment from '../pages/Payments/FormConfirmPayment';
-import { PaymentResult, PaymentStatus } from '../../types/paymentsModule';
+import { ListPaymentsRequest, PaymentResult } from '../../types/paymentsModule';
 import ShowPaymentResult from '../pages/Payments/ShowPaymentResult';
 import ShowTerminalInfo from '../pages/Payments/ShowTerminalInfo';
 import FormPixPayment from '../pages/Pix/FormPixPayment';
@@ -20,7 +20,12 @@ import FormPixRefund from '../pages/Pix/RefundPix/FormPixRefund';
 import MainPix from '../pages/Pix/MainPix';
 import MainPayment from '../pages/Payments/MainPayment';
 import PixInstalled from '../pages/Pix/PixInstalled';
-import { PixResult, PixStatus } from '../../types/pixModule';
+import {
+  FilterType,
+  PixResult,
+  PixStatus,
+  ReportType
+} from '../../types/pixModule';
 import ConsultPixOptions from '../pages/Pix/ConsultPix/ConsultPixOptions';
 import FormConsultPix from '../pages/Pix/ConsultPix/FormConsultPix';
 import SyncPix from '../pages/Pix/SyncPix';
@@ -30,6 +35,10 @@ import ShowReceiptLogo from '../pages/Payments/ShowReceiptLogo';
 import FormFilter from '../pages/Pix/FormFilter';
 import RefundPixOptions from '../pages/Pix/RefundPix/RefundPixOptions';
 import FormMainApp from '../pages/Payments/FormMainApp';
+import GetReportPix from '../pages/Pix/ReportPix';
+import StartInitialization from '../pages/Payments/StartInitialization';
+import ReprintReceipt from '../pages/Payments/ReprintReceipt';
+import FormFindPayment from '../pages/Payments/FormFindPayment';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -37,7 +46,10 @@ const screenOptions = {
   ...TransitionPresets.SlideFromRightIOS,
   headerStyle: { backgroundColor: 'rgba(65,80,200,225)' },
   headerTitleStyle: { color: '#fff' },
-  headerTintColor: '#fff'
+  headerTintColor: '#fff',
+  cardStyle: {
+    backgroundColor: '#fff'
+  }
 };
 
 const PaymentsRoutes = () => {
@@ -49,6 +61,11 @@ const PaymentsRoutes = () => {
       }}
     >
       <Stack.Screen name="MainPayment" component={MainPayment} />
+      <Stack.Screen
+        name="FormFindPayment"
+        component={FormFindPayment}
+        options={{ title: 'Filtrar Pagamentos' }}
+      />
       <Stack.Screen name="FormPayment" component={FormPayment} />
       <Stack.Screen name="FormReversal" component={FormReversal} />
       <Stack.Screen name="FormListPayments" component={FormListPayments} />
@@ -56,6 +73,11 @@ const PaymentsRoutes = () => {
       <Stack.Screen name="FormConfirmPayment" component={FormConfirmPayment} />
       <Stack.Screen name="ShowPaymentResult" component={ShowPaymentResult} />
       <Stack.Screen name="TerminalInfo" component={ShowTerminalInfo} />
+      <Stack.Screen
+        options={{ title: 'Inicializar' }}
+        name="StartInitialization"
+        component={StartInitialization}
+      />
       <Stack.Screen
         options={{ title: 'Obter Logo Portal' }}
         name="ShowLogo"
@@ -65,6 +87,11 @@ const PaymentsRoutes = () => {
         options={{ title: 'Obter Logo Recibo' }}
         name="ShowReceiptLogo"
         component={ShowReceiptLogo}
+      />
+      <Stack.Screen
+        options={{ title: 'Reimprimir Comprovante' }}
+        name="ReprintReceipt"
+        component={ReprintReceipt}
       />
       <Stack.Screen
         options={{ title: 'Definir aplicação principal' }}
@@ -120,6 +147,7 @@ const PixRoutes = () => {
         name="RefundPixOptions"
         component={RefundPixOptions}
       />
+      <Stack.Screen name="GetReportPix" component={GetReportPix} />
       <Stack.Screen name="FormConsultPix" component={FormConsultPix} />
       <Stack.Screen
         options={{ title: 'Sincronizar Pix' }}
@@ -170,11 +198,13 @@ export type RootStackParamList = {
   //Rotas Payments
   MainPayment: {};
   FormPayment: {};
+  FormFindPayment: {};
+  ReprintReceipt: {};
   FormReversal: {
     item?: PaymentResult;
   };
   FormListPayments: {
-    status: PaymentStatus[];
+    request: ListPaymentsRequest;
     navigateTo?: keyof RootStackParamList;
     title?: string;
   };
@@ -189,6 +219,7 @@ export type RootStackParamList = {
   };
   TerminalInfo: {};
   ShowLogo: {};
+  StartInitialization: {};
   ShowReceiptLogo: {};
   //Rotas Pix
   MainPix: {};
@@ -199,6 +230,11 @@ export type RootStackParamList = {
       dateStart: string;
       dateEnd: string;
     };
+  };
+  GetReportPix: {
+    startDate: string;
+    endDate: string;
+    reportType: ReportType;
   };
   ShowPixResult: {
     item: PixResult;
@@ -215,6 +251,7 @@ export type RootStackParamList = {
   SyncPix: {};
   FormFilter: {
     title?: string;
+    filterType: FilterType;
   };
   FormMainApp: {};
 };

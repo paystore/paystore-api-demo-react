@@ -5,10 +5,12 @@ import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.phoebus.appdemo.model.pix.PixStatus;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class PixServices {
     private final PixClient pixClient;
@@ -37,53 +39,59 @@ public class PixServices {
         });
     }
 
-    public boolean isPixInstalled(){
+    public boolean isPixInstalled() {
         return pixClient.isAppPixInstalled();
     }
 
-    public void doPixPayment(String value, String pixClientId, Boolean printMerchantReceipt, Boolean printCustomerReceipt) {
-        OnBindConnectedPixServices doPixPayment = new DoPixCreateCobService(context, pixClient, value, pixClientId, printMerchantReceipt, printCustomerReceipt, promise );
+    public void doPixPayment(@Nullable String value, String pixClientId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPixServices doPixPayment = new DoPixCreateCobService(context, pixClient, value, pixClientId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPixPaymentService(doPixPayment);
         doBind();
     }
 
-    public void doListPixPayment(Date startDate, Date finishDate, List<PixStatus> statusPixList, String value){
+    public void doListPixPayment(Date startDate, Date finishDate, List<PixStatus> statusPixList, @Nullable String value) {
         OnBindConnectedPixServices doListPix = new DoPixListCobService(context, pixClient, startDate, finishDate, statusPixList, value, promise);
         setOnBindConnectedPixPaymentService(doListPix);
         doBind();
     }
 
-    public void doRefundPixPayment(String txId, Boolean printMerchantReceipt, Boolean printCustomerReceipt){
-        OnBindConnectedPixServices doRefundPix = new DoPixRefundCobByTxIdService(context, pixClient, txId, printMerchantReceipt, printCustomerReceipt, promise);
+    public void doRefundPixPayment(String txId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPixServices doRefundPix = new DoPixRefundCobByTxIdService(context, pixClient, txId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPixPaymentService(doRefundPix);
         doBind();
     }
 
-    public void doRefundPix(Boolean printMerchantReceipt, Boolean printCustomerReceipt){
-        OnBindConnectedPixServices doRefundPix = new DoPixRefundService(context, pixClient, printMerchantReceipt, printCustomerReceipt, promise);
+    public void doRefundPix(@Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPixServices doRefundPix = new DoPixRefundService(context, pixClient, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPixPaymentService(doRefundPix);
         doBind();
     }
 
-    public void doConsultPixByTxId(String txId, Boolean printMerchantReceipt, Boolean printCustomerReceipt){
-        OnBindConnectedPixServices doConsultPix = new DoPixConsultByTxIdService(context, pixClient, txId, printMerchantReceipt, printCustomerReceipt, promise);
+    public void doConsultPixByTxId(String txId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPixServices doConsultPix = new DoPixConsultByTxIdService(context, pixClient, txId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPixPaymentService(doConsultPix);
         doBind();
     }
 
-    public void doConsultPixByClientId(String clientId){
+    public void doConsultPixByClientId(String clientId) {
         OnBindConnectedPixServices doConsultPix = new DoPixConsultByClientIdService(context, pixClient, clientId, promise);
         setOnBindConnectedPixPaymentService(doConsultPix);
         doBind();
     }
 
-    public void doConsultPix(Boolean printMerchantReceipt, Boolean printCustomerReceipt){
-        OnBindConnectedPixServices doConsultPix = new DoPixConsultService(context, pixClient, printMerchantReceipt, printCustomerReceipt, promise);
+    public void doConsultPix(@Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt) {
+        OnBindConnectedPixServices doConsultPix = new DoPixConsultService(context, pixClient, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, promise);
         setOnBindConnectedPixPaymentService(doConsultPix);
         doBind();
     }
 
-    public void doSincronize(){
+    public void doGetReport(String startDate, String endDate, @Nullable String reportType) {
+        OnBindConnectedPixServices doGetReport = new DoPixGetReportService(pixClient, startDate, endDate, reportType, promise);
+        setOnBindConnectedPixPaymentService(doGetReport);
+        doBind();
+    }
+
+    public void doSincronize() {
         OnBindConnectedPixServices doSync = new DoSyncPixService(pixClient, promise);
         setOnBindConnectedPixPaymentService(doSync);
         doBind();

@@ -32,14 +32,14 @@ public class DoGetLogoService implements OnBindConnectedPaymentService {
 
                @Override
                public void onError(ErrorData errorData) {
-                   Log.e("Error", errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
+                   Log.e(Constants.TAG, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
                    promise.reject(Constants.ERROR, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "");
                    unBind();
                }
            });
 
         }catch (Exception  e){
-            Log.e("Error", e.getMessage());
+            Log.e(Constants.TAG, "Erro ao obter a logo", e);
             promise.reject("ERRORS" + "REQUEST", "ERROR NAME  :" +  e.getMessage() + ", ERROR_CODE : " + e.toString());
         }
 

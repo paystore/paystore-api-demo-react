@@ -54,7 +54,7 @@ public class DoCancelPayment implements OnBindConnectedPaymentService {
                 }
             });
         } catch (Exception e) {
-            Log.e("Cancel Payment fail", e.getMessage());
+            Log.e(Constants.TAG, "Erro ao cancelar o pagamento.", e);
             promise.reject("ERROR", e.getMessage());
             unBind();
         }

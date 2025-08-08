@@ -4,15 +4,18 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 
+import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import br.com.phoebus.android.payments.api.PaymentClient;
 import br.com.phoebus.android.payments.api.PaymentType;
 import br.com.phoebus.android.payments.api.PaymentV2;
 
 public class PaymentService {
-
     private PaymentClient paymentClient = new PaymentClient();
     private ReactContext context;
     private Promise promise;
@@ -24,8 +27,6 @@ public class PaymentService {
     }
 
     private void doBind() {
-        Promise promise = this.promise;
-
         this.paymentClient.bind(this.context.getApplicationContext(), new PaymentClient.OnConnectionCallback() {
             @Override
             public void onConnected() {
@@ -40,8 +41,8 @@ public class PaymentService {
         });
     }
 
-    public void doPayment(String value, String transactionId, boolean showReceiptView, List<PaymentType> paymentType, Integer installments, Boolean confirmPayment) {
-        OnBindConnectedPaymentService doPayment = new DoPaymentService(context, paymentClient, value, transactionId, showReceiptView, paymentType, installments, confirmPayment, promise);
+    public void doPayment(String value, String appTransactionId, @Nullable Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, List<PaymentType> paymentType, @Nullable Integer installments, @Nullable Boolean confirmPayment) {
+        OnBindConnectedPaymentService doPayment = new DoPaymentService(context, paymentClient, value, appTransactionId, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, paymentType, installments, confirmPayment, promise);
         setOnBindConnectedPaymentService(doPayment);
         doBind();
     }
@@ -70,9 +71,27 @@ public class PaymentService {
         doBind();
     }
 
-    public void doSetMainApp(String packageName){
-        OnBindConnectedPaymentService doSetMainApp = new DoSetMainAppService(context, paymentClient, packageName, promise );
+    public void doSetMainApp(String packageName) {
+        OnBindConnectedPaymentService doSetMainApp = new DoSetMainAppService(context, paymentClient, packageName, promise);
         setOnBindConnectedPaymentService(doSetMainApp);
+        doBind();
+    }
+
+    public void doStartInicialization() {
+        OnBindConnectedPaymentService doStartInicialization = new DoStartInitialization(context, paymentClient, promise);
+        setOnBindConnectedPaymentService(doStartInicialization);
+        doBind();
+    }
+
+    public void doReprintReceipt(Boolean printMerchantReceipt, @Nullable Boolean printCustomerReceipt, @Nullable Boolean previewMerchantReceipt, @Nullable Boolean previewCustomerReceipt, @Nullable String paymentId) {
+        OnBindConnectedPaymentService doReprintReceipt = new DoReprintReceiptService(context, paymentClient, printMerchantReceipt, printCustomerReceipt, previewMerchantReceipt, previewCustomerReceipt, paymentId, promise);
+        setOnBindConnectedPaymentService(doReprintReceipt);
+        doBind();
+    }
+
+    public void doGetPayments(ReadableMap request) {
+        OnBindConnectedPaymentService doGetPayments = new DoGetPayments(context, request, promise);
+        setOnBindConnectedPaymentService(doGetPayments);
         doBind();
     }
 

@@ -9,23 +9,19 @@ import { CobStatusList } from '../../../utils/constants';
 
 type MainPixScreenProps = NativeStackScreenProps<RootStackParamList, 'MainPix'>;
 
-type NavigationOption<T extends keyof RootStackParamList> = {
+type NavigationOption<T extends keyof Partial<RootStackParamList>> = {
   id: string;
   title: string;
   navigationTo: T;
   params: RootStackParamList[T];
 };
 
+type NavigationOptions = {
+  [K in keyof RootStackParamList]: NavigationOption<K>;
+}[keyof RootStackParamList];
+
 export default function MainPix({ navigation }: Readonly<MainPixScreenProps>) {
-  const options: Array<
-    | NavigationOption<'FormPixPayment'>
-    | NavigationOption<'RefundPixOptions'>
-    | NavigationOption<'FormListPix'>
-    | NavigationOption<'FormFilter'>
-    | NavigationOption<'PixInstalled'>
-    | NavigationOption<'ConsultPixOptions'>
-    | NavigationOption<'SyncPix'>
-  > = [
+  const options: NavigationOptions[] = [
     {
       id: '1',
       title: 'Verificar App Pix Instalado',
@@ -43,7 +39,8 @@ export default function MainPix({ navigation }: Readonly<MainPixScreenProps>) {
       title: 'Listar Pagamentos Pix',
       navigationTo: 'FormFilter',
       params: {
-        title: 'Listar Pagamentos'
+        title: 'Listar Pagamentos',
+        filterType: 'COB'
       }
     },
     {
@@ -63,6 +60,15 @@ export default function MainPix({ navigation }: Readonly<MainPixScreenProps>) {
       title: 'Sincronizar',
       navigationTo: 'SyncPix',
       params: {}
+    },
+    {
+      id: '6',
+      title: 'Relatórios',
+      navigationTo: 'FormFilter',
+      params: {
+        title: 'Relatórios',
+        filterType: 'REPORT'
+      }
     }
   ];
   return (

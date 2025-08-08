@@ -13,53 +13,55 @@ import com.phoebus.appdemo.utils.Constants;
 import com.phoebus.appdemo.utils.CredentialsUtils;
 import com.phoebus.appdemo.utils.DataTypeUtils;
 
+import javax.annotation.Nullable;
+
 import br.com.phoebus.android.payments.api.ErrorData;
 import br.com.phoebus.android.payments.api.PaymentClient;
 import br.com.phoebus.android.payments.api.ReversePayment;
 import br.com.phoebus.android.payments.api.ReversePaymentRequestV2;
 
 
+public class DoReverseService implements OnBindConnectedPaymentService {
 
-public class DoReverseService implements OnBindConnectedPaymentService{
-
-    private PaymentClient mPaymentClient;
-    private ReactContext mContext;
-    private Promise promise;
-    private String value;
-    private String transactionId;
-    private String paymentId;
-    private Boolean showReceiptView ;
-    private Boolean setPrintMerchantReceipt ;
-    private Boolean setPrintCustomerReceipt ;
+    private final PaymentClient mPaymentClient;
+    private final ReactContext mContext;
+    private final Promise promise;
+    private final String value;
+    private final String transactionId;
+    private final String paymentId;
+    private final Boolean printMerchantReceipt;
+    private final Boolean printCustomerReceipt;
+    private final Boolean previewMerchantReceipt;
+    private final Boolean previewCustomerReceipt;
 
 
     public DoReverseService(ReactContext context,
-                           PaymentClient paymentClient,
-                           String value,
-                           String transactionId,
-                           String paymentId,
-                            boolean showReceiptView,
-                            boolean setPrintMerchantReceipt,
-                            boolean setPrintCustomerReceipt,
-                           Promise promise)
-    {
+                            PaymentClient paymentClient,
+                            @Nullable String value,
+                            String transactionId,
+                            String paymentId,
+                            @Nullable Boolean printMerchantReceipt,
+                            @Nullable Boolean printCustomerReceipt,
+                            @Nullable Boolean previewMerchantReceipt,
+                            @Nullable Boolean previewCustomerReceipt,
+                            Promise promise) {
         this.mPaymentClient = paymentClient;
         this.mContext = context;
         this.promise = promise;
         this.value = value;
         this.transactionId = transactionId;
         this.paymentId = paymentId;
-        this.showReceiptView = showReceiptView;
-        this.setPrintMerchantReceipt = setPrintMerchantReceipt;
-        this.setPrintCustomerReceipt = setPrintCustomerReceipt;
+        this.printMerchantReceipt = printMerchantReceipt;
+        this.printCustomerReceipt = printCustomerReceipt;
+        this.previewMerchantReceipt = previewMerchantReceipt;
+        this.previewCustomerReceipt = previewCustomerReceipt;
     }
 
     @Override
-    public void execute(){
-        Log.e("Valor", value);
-        Log.e("paymentId", paymentId);
-        Log.e("transactionId", transactionId);
-        Log.e("showReceiptView", showReceiptView.toString());
+    public void execute() {
+        Log.d(Constants.TAG, "Valor: " + value);
+        Log.d(Constants.TAG, "paymentId: " + paymentId);
+        Log.d(Constants.TAG, "transactionId: " + transactionId);
 
         ReversePaymentRequestV2 reversePaymentRequest = new ReversePaymentRequestV2();
         try {
@@ -68,13 +70,14 @@ public class DoReverseService implements OnBindConnectedPaymentService{
                     .withAppTransactionId(transactionId)
                     .withPaymentId(paymentId)
                     .withCredentials(CredentialsUtils.getMyCredentials())
-                    .withShowReceiptView(showReceiptView);
-            reversePaymentRequest.setPrintCustomerReceipt(setPrintCustomerReceipt);
-            reversePaymentRequest.setPrintMerchantReceipt(setPrintMerchantReceipt);
+                    .withPrintCustomerReceipt(printCustomerReceipt)
+                    .withPrintMerchantReceipt(printMerchantReceipt);
+            reversePaymentRequest.setPreviewCustomerReceipt(previewCustomerReceipt);
+            reversePaymentRequest.setPreviewMerchantReceipt(previewMerchantReceipt);
 
-        }catch (Exception  e){
-            Log.e("Error", e.getMessage());
-            promise.reject("ERRORS" + "REQUEST", "ERROR NAME  :" +  e.getMessage() + ", ERROR_CODE : " + e.toString());
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Erro na requisicao", e);
+            promise.reject("ERRORS" + "REQUEST", "ERROR NAME  :" + e.getMessage() + ", ERROR_CODE : " + e.toString());
         }
 
         try {
@@ -92,9 +95,9 @@ public class DoReverseService implements OnBindConnectedPaymentService{
 
                 @Override
                 public void onError(ErrorData errorData) {
-                    Log.e("Error", errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
+                    Log.e(Constants.TAG, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "-");
                     promise.reject(Constants.ERROR, errorData != null ? errorData.getPaymentsResponseCode() + " - " + errorData.getResponseMessage() : "");
-                    unBind(); 
+                    unBind();
                 }
             });
         } catch (Exception e) {
@@ -113,8 +116,7 @@ public class DoReverseService implements OnBindConnectedPaymentService{
     }
 
     private void unBind() {
-        if (mPaymentClient.isBound())
-        {
+        if (mPaymentClient.isBound()) {
             mPaymentClient.unbind(mContext);
         }
     }

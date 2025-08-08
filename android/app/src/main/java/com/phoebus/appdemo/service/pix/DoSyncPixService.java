@@ -8,7 +8,7 @@ import com.facebook.react.bridge.Promise;
 import com.google.gson.Gson;
 import com.phoebus.appdemo.model.pix.PixErrorResponse;
 import com.phoebus.appdemo.utils.Constants;
-import com.phoebus.pix.sdk.PixClient;
+import com.phoebus.phastpay.sdk.client.PixClient;
 
 public class DoSyncPixService implements OnBindConnectedPixServices {
 
