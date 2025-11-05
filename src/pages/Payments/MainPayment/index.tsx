@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { FlatList } from 'react-native';
 
-import { Container, Button, ButtonText, StatusBar } from './styles';
+import { Button, ButtonText, Container, StatusBar } from './styles';
 
-import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../routes';
 
 type MainPaymentScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -96,6 +96,12 @@ export default function MainPayment({
       id: '11',
       title: 'Inicializar',
       navigationTo: 'StartInitialization',
+      params: {}
+    },
+    {
+      id: '12',
+      title: 'Autenticar Supervisor',
+      navigationTo: 'FormSupervisorPasswordCheck',
       params: {}
     }
   ];

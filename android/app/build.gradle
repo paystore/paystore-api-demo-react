@@ -1,7 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 project.ext.vectoricons = [
-    iconFontNames: [ 'Octicons.ttf', 'MaterialCommunityIcons.ttf'] // Specify font files
+    iconFontNames: [ 'Octicons.ttf', 'MaterialCommunityIcons.ttf', "Ionicons.ttf"] // Specify font files
 ]
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
@@ -114,8 +114,8 @@ android {
         applicationId "com.phoebus.appdemo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.0.5.0"
+        versionCode 7
+        versionName "1.0.6.0"
     }  
     signingConfigs {
         debug {

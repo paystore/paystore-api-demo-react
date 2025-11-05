@@ -13,7 +13,7 @@
 
 - React 18.2.0
 - React Native 0.73.7
-- Payments SDK v.4.0.2.8
+- Payments SDK v.4.1.0.3
 - PhastPay SDK v.1.0.0.0
 
 ## 📚 Documentação

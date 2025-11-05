@@ -1,4 +1,6 @@
 package com.phoebus.appdemo.utils;
+import com.phoebus.appdemo.BuildConfig;
+
 import br.com.phoebus.android.payments.api.ApplicationInfo;
 import br.com.phoebus.android.payments.api.Credentials;
 
@@ -18,7 +20,7 @@ public class CredentialsUtils {
 
     ApplicationInfo applicationInfo = new ApplicationInfo();
     applicationInfo.setCredentials(getMyCredentials());
-    applicationInfo.setSoftwareVersion("1.0");
+    applicationInfo.setSoftwareVersion(BuildConfig.VERSION_NAME);
 
     return applicationInfo;
   }

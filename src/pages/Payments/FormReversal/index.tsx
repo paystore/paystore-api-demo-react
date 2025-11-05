@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Formik, FormikErrors, FormikValues } from 'formik';
 import { CheckBoxItem } from '../../../components/Checkbox';
-import { InputText } from '../../../components/Input';
+import { InputText } from '../../../components/Input/InputText';
 import { Payment } from '../../../native_modules/payment';
 import { currencyToFloat, maskMoney } from '../../../helper/strings';
 import SubmitButton from '../../../components/SubmitButtom';

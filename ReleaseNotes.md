@@ -1,8 +1,18 @@
 # Release Notes
 
+## v1.0.6.0
+
+#### refs: 152768
+- Adicionado versão real da aplicação.
+- atualização do readme da versao do sdk.
+
+#### refs: 157269
+- 
+
 ## v1.0.5.0
 
 #### refs: 152768
+- Incremento de versão - atualização do release notes. - Adição do arquivo para gerar o release notes.
 - Alterado versão do node para 10. - Ajustado codigo typescript nos menus iniciais . - Arredondado valor para criar pagamento. Evitando problemas com o emulador sem necessidade.
 - Adicionada nova tela de busca de pagamentos, utilizando a nova função listPayments. - Adicionado pacote  nanoId para gerar appTransactionId customizado com 6 caracteres
 - Adicionado Readablemap para receber os paramentros das funções. - Renomeado os services de startPayment para startPaymentV2, startReverse para reversePaymentV2 e reprintReceipt para reprintV2. - Criada as interfaces das requisições de pagamento, estorno e reimpressao.
