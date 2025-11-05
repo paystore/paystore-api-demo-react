@@ -15,6 +15,7 @@ import com.phoebus.appdemo.model.TerminalInfo;
 import com.phoebus.appdemo.service.payments.PaymentService;
 import com.phoebus.appdemo.service.payments.ReverseService;
 import com.phoebus.appdemo.utils.DataTypeUtils;
+import com.phoebus.appdemo.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -209,6 +210,19 @@ public class PaymentModule extends ReactContextBaseJavaModule {
             paymentService.doStartInicialization();
         } catch (Exception e) {
             Log.e("startInitialization", e.toString());
+            promise.reject("ERROR", e.getMessage());
+        }
+    }
+
+    //Autentica supervisor
+    @ReactMethod
+    public void supervisorPasswordCheck(String password, Promise promise) {
+        try {
+            String passwordMD5 = StringUtils.getMd5Hash(password);
+            PaymentService paymentService = new PaymentService(this.getReactApplicationContext(), promise);
+            paymentService.doSupervisorPasswordCheck(passwordMD5);
+        } catch (Exception e) {
+            Log.e("errorSupervisorPasswordCheck", e.toString());
             promise.reject("ERROR", e.getMessage());
         }
     }

@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FlatList } from 'react-native';
 
-import { Container, Button, ButtonText, StatusBar } from './styles';
+import { Button, ButtonText, Container, StatusBar } from './styles';
 
-import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CobStatusList } from '../../../utils/constants';
+import { RootStackParamList } from '../../../routes';
 
 type MainPixScreenProps = NativeStackScreenProps<RootStackParamList, 'MainPix'>;
 

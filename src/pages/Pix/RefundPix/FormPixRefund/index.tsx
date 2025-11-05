@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { StartRefundRequest } from '../../../../../types/pixModule';
 import { CheckBoxItem } from '../../../../components/Checkbox';
-import { InputText } from '../../../../components/Input';
+import { InputText } from '../../../../components/Input/InputText';
 import SubmitButton from '../../../../components/SubmitButtom';
 import { Pix } from '../../../../native_modules/payment';
 import { RootStackParamList } from '../../../../routes';

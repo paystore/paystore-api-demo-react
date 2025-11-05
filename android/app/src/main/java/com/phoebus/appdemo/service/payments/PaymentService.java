@@ -6,7 +6,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -74,6 +73,12 @@ public class PaymentService {
     public void doSetMainApp(String packageName) {
         OnBindConnectedPaymentService doSetMainApp = new DoSetMainAppService(context, paymentClient, packageName, promise);
         setOnBindConnectedPaymentService(doSetMainApp);
+        doBind();
+    }
+
+    public void doSupervisorPasswordCheck(String password) {
+        OnBindConnectedPaymentService doSupervisorPasswordCheck = new DoSupervisorPasswordCheck(context, paymentClient, password, promise);
+        setOnBindConnectedPaymentService(doSupervisorPasswordCheck);
         doBind();
     }
 

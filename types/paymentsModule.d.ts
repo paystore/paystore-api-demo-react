@@ -173,18 +173,31 @@ export type ReprintReceiptRequestV2 = {
 };
 
 export interface PaymentsInterface {
+  //Inicia um pagamento
   startPaymentV2: (request: PaymentRequestV2) => Promise<void>;
+  //Inicia os pagamentos
   listPayments: (request: ListPaymentsRequest) => Promise<void>;
+  //Estorna os pagamentos
   reversePaymentV2: (request: ReversePaymentRequestV2) => Promise<void>;
+  //Desfaz pagamento não confirmado
   cancelPayment: (
     //Identificador do pagamento
     paymentId: string
   ) => Promise<void>;
+  //Confirma um pagamento
   confirmPayment: (paymentItem: string) => Promise<void>;
+  //Obtém as informações do terminal
   getTerminalInfo: () => Promise<string>;
+  //Obtém a logo do estabelecimento
   getLogo: () => Promise<string>;
+  //Obtém a logo do comprovante
   getReceiptLogo: () => Promise<string>;
+  //Seta o um app como app principal
   setMainApp: (packageName: string) => Promise<void>;
+  //Inicializa um terminal
   startInitialization: () => Promise<void>;
+  //Reimprime um comprovane
   reprintV2: (request: ReprintReceiptRequestV2) => Promise<void>;
+  //Autentica o supervisor
+  supervisorPasswordCheck: (password: String) => Promise<Boolean>;
 }

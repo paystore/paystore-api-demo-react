@@ -39,6 +39,7 @@ import GetReportPix from '../pages/Pix/ReportPix';
 import StartInitialization from '../pages/Payments/StartInitialization';
 import ReprintReceipt from '../pages/Payments/ReprintReceipt';
 import FormFindPayment from '../pages/Payments/FormFindPayment';
+import FormSupervisorPasswordCheck from '../pages/Payments/SupervisorPasswordCheck';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -97,6 +98,11 @@ const PaymentsRoutes = () => {
         options={{ title: 'Definir aplicação principal' }}
         name="FormMainApp"
         component={FormMainApp}
+      />
+      <Stack.Screen
+        options={{ title: 'Autenticar Supervisor' }}
+        name="FormSupervisorPasswordCheck"
+        component={FormSupervisorPasswordCheck}
       />
     </Stack.Navigator>
   );
@@ -217,6 +223,7 @@ export type RootStackParamList = {
   ShowPaymentResult: {
     item: PaymentResult;
   };
+  FormSupervisorPasswordCheck: {};
   TerminalInfo: {};
   ShowLogo: {};
   StartInitialization: {};

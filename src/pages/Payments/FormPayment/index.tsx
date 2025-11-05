@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, DeviceEventEmitter, ToastAndroid } from 'react-native';
+import uuid from 'react-native-uuid';
 /**@ts-ignone */
 import CheckBox from '@react-native-community/checkbox';
 import { Payment } from '../../../native_modules/payment';
@@ -16,7 +17,6 @@ import {
   FormCheckBox,
   CheckBoxLabel
 } from './styles';
-import { customAlphabet } from 'nanoid/non-secure';
 import { RootStackParamList } from '../../../routes';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { PaymentResult, PaymentTypes } from '../../../../types/paymentsModule';
@@ -37,16 +37,10 @@ export default function FormPayment({
   }, [navigation]);
 
   const defaultValue = maskMoney((Math.random() * 100).toFixed(2).toString());
-  const nanoid6 = customAlphabet(
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-    6
-  );
-  const defaulAppTransaction = nanoid6();
 
   const [value, setValue] = useState(defaultValue);
   const [installments, setInstallments] = useState<string>();
-  const [appTransactionId, setAppTransactionId] =
-    useState(defaulAppTransaction);
+  const [appTransactionId, setAppTransactionId] = useState(() => uuid.v4());
   const [previewCustomerReceipt, setPreviewCustomerReceipt] = useState(true);
   const [previewMerchantReceipt, setPreviewMerchantReceipt] = useState(true);
   const [printMerchantReceipt, setPrintMerchantReceipt] = useState(false);
@@ -168,10 +162,8 @@ export default function FormPayment({
         </TextInputLabel>
         <TextInput
           value={appTransactionId}
-          maxLength={6}
           onChangeText={(text) => {
-            const sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
-            setAppTransactionId(sanitized);
+            setAppTransactionId(text);
           }}
         />
       </FormTextInput>
